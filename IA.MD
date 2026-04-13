@@ -15,6 +15,13 @@
 | **Idioma del prompt** | Español |
 
 ---
+
+## 🧠 ¿Qué es Claude?
+
+Claude es un asistente de inteligencia artificial desarrollado por **Anthropic**, diseñado para tareas de razonamiento, generación de código, escritura creativa y análisis de documentos. En este proyecto se utilizó para interpretar los requisitos del cliente (entregados como texto y bocetos) y transformarlos en código HTML/CSS/JS funcional y con diseño profesional.
+
+---
+
 ## 📋 Contexto del proyecto
 
 El cliente es un **club deportivo** llamado **SportClub** que necesitaba digitalizar su sistema de gestión de usuarios y reservas. No contaba con conocimientos técnicos, por lo que entregó:
@@ -199,13 +206,75 @@ Al recibir la imagen PNG del logo real de SportClub:
 3. En todos los dashboards (sidebar), reemplazó el logo de texto por: `<img src="logo.png" alt="SportClub" style="height:40px;">`
 4. Se eliminaron los elementos HTML del logo artificial (`.logo-icon`, texto con `<span>`)
 
+### Paso 11 — Creación de `index.html` (Landing Page)
+
+Página pública de presentación del club, con las siguientes secciones:
+
+**Navbar fijo:**
+- Logo oficial + links de navegación interna (anclas)
+- Botones "Iniciar sesión" y "Únete ahora" que enlazan con login y registro
+- Efecto de scroll: cambia opacidad y padding al bajar la página (JavaScript)
+
+**Hero (pantalla completa):**
+- Layout asimétrico con franja diagonal morada a la derecha y línea dorada de acento
+- Texto fantasma decorativo ("SC") de gran escala en el fondo
+- Eyebrow animado con punto dorado parpadeante
+- Título en Bebas Neue: "Tu mejor versión comienza hoy"
+- Descripción del club y dos botones CTA
+- Estadísticas: 1200+ miembros, 40+ clases, 15 coaches
+- Animaciones de entrada escalonadas (`fadeUp` con `animation-delay`)
+
+**Sección Nosotros:**
+- Grid de dos columnas: tarjeta con cita filosófica + características del club
+- Tarjeta con texto en itálica y badge de filosofía
+- Tarjeta flotante dorada con "8+ Años de experiencia"
+- 3 features con ícono, título y descripción
+
+**Sección Clases:**
+- Grid de 3 columnas con 6 tarjetas de clase
+- CrossFit como tarjeta destacada (`featured`) con estilo especial
+- Cada tarjeta con emoji, nombre, descripción, horario y nivel
+- Hover con elevación y resplandor dorado
+
+**Sección Coaches:**
+- Grid de 4 columnas con tarjetas de entrenadores
+- Avatar con gradiente de color único por coach
+- Nombre, especialidad y descripción breve
+
+**Sección Beneficios:**
+- Grid de 3×2 con 6 beneficios del club
+- Íconos emoji + título + descripción
+- Hover con borde dorado sutil
+
+**Sección Horarios:**
+- Tabla semanal completa con pills de colores por disciplina:
+  - Dorado: CrossFit y Funcional
+  - Azul: Spinning
+  - Verde: Yoga
+  - Rosa: HIIT y Boxeo
+
+**Sección Visión:**
+- Background con gradiente morado y texto fantasma "VISIÓN"
+- Grid: texto de visión izquierda + 4 pills de pilares (Tecnología, Comunidad, Excelencia, Innovación)
+
+**CTA Final:**
+- Llamada a la acción centrada con botones hacia registro y login
+
+**Footer:**
+- Logo + links de navegación + copyright
+
+**Animaciones:**
+- `IntersectionObserver` para revelar elementos al hacer scroll (clase `reveal` → `visible`)
+- Delays escalonados por sección para efecto cascada
+
 ---
 
-## 📁 Estructura final del proyecto
+
 
 ```
 sportclub/
 ├── styles.css               ← CSS compartido (tokens, layout, componentes)
+├── index.html               ← Landing page pública
 ├── login.html               ← Inicio de sesión
 ├── register.html            ← Registro de usuario
 ├── recover.html             ← Recuperación de contraseña
