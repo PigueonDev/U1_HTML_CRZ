@@ -1,8 +1,1139 @@
 <!DOCTYPE html>
-<html>
+<html lang="es">
 <head>
-  <meta http-equiv="refresh" content="0; url=login.html">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SportClub – Tu mejor versión comienza hoy</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:ital,wght@0,300;0,400;0,500;0,600;0,700;0,900;1,300;1,400&family=Barlow+Condensed:wght@400;600;700;900&display=swap" rel="stylesheet" />
+
+  <style>
+    /* ── TOKENS ──────────────────────────────────────────── */
+    :root {
+      --purple:       #2E1A47;
+      --purple-mid:   #3d2460;
+      --purple-light: #4a2d70;
+      --purple-dark:  #1a0f2a;
+      --gold:         #F2B705;
+      --gold-dark:    #c99500;
+      --gold-glow:    rgba(242,183,5,0.18);
+      --white:        #FFFFFF;
+      --muted:        rgba(255,255,255,0.5);
+      --muted-light:  rgba(255,255,255,0.08);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Barlow', sans-serif;
+      background: var(--purple-dark);
+      color: var(--white);
+      overflow-x: hidden;
+    }
+
+    /* ── NOISE OVERLAY ───────────────────────────────────── */
+    body::before {
+      content: '';
+      position: fixed; inset: 0; pointer-events: none; z-index: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+      opacity: 0.4;
+    }
+
+    /* ── NAVBAR ──────────────────────────────────────────── */
+    .navbar {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 1.2rem 4rem;
+      background: rgba(26,15,42,0.85);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      transition: all 0.3s;
+    }
+    .navbar.scrolled {
+      padding: 0.8rem 4rem;
+      background: rgba(26,15,42,0.97);
+    }
+    .nav-logo img { height: 42px; width: auto; }
+    .nav-links {
+      display: flex; gap: 2.5rem; list-style: none;
+    }
+    .nav-links a {
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 0.9rem; font-weight: 500;
+      letter-spacing: 0.04em;
+      transition: color 0.2s;
+    }
+    .nav-links a:hover { color: var(--white); }
+    .nav-cta {
+      display: flex; gap: 0.8rem; align-items: center;
+    }
+    .btn-outline {
+      padding: 0.6rem 1.4rem;
+      border: 1.5px solid rgba(255,255,255,0.2);
+      border-radius: 8px;
+      color: var(--white);
+      text-decoration: none;
+      font-size: 0.88rem; font-weight: 600;
+      transition: all 0.2s;
+    }
+    .btn-outline:hover { border-color: var(--gold); color: var(--gold); }
+    .btn-gold {
+      padding: 0.6rem 1.4rem;
+      background: var(--gold);
+      border-radius: 8px;
+      color: var(--purple-dark);
+      text-decoration: none;
+      font-size: 0.88rem; font-weight: 700;
+      transition: all 0.2s;
+    }
+    .btn-gold:hover { background: var(--gold-dark); }
+
+    /* ── HERO ────────────────────────────────────────────── */
+    .hero {
+      min-height: 100vh;
+      display: flex; align-items: center;
+      position: relative; overflow: hidden;
+      padding: 8rem 4rem 4rem;
+    }
+
+    /* Decorative diagonal stripe */
+    .hero::before {
+      content: '';
+      position: absolute; top: 0; right: 0;
+      width: 55%; height: 100%;
+      background: linear-gradient(135deg, var(--purple-mid) 0%, var(--purple-light) 60%, #5c3a88 100%);
+      clip-path: polygon(12% 0, 100% 0, 100% 100%, 0% 100%);
+      z-index: 0;
+    }
+    /* Gold accent line */
+    .hero::after {
+      content: '';
+      position: absolute; top: 0; right: calc(55% - 4px);
+      width: 4px; height: 100%;
+      background: var(--gold);
+      z-index: 1;
+    }
+
+    /* Big ghost text */
+    .hero-ghost {
+      position: absolute; bottom: -60px; right: -40px;
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(8rem, 18vw, 20rem);
+      line-height: 1;
+      color: rgba(255,255,255,0.03);
+      pointer-events: none; z-index: 0;
+      user-select: none;
+      white-space: nowrap;
+    }
+
+    /* Gold floating shapes */
+    .hero-circle {
+      position: absolute;
+      border-radius: 50%;
+      background: radial-gradient(circle, var(--gold-glow) 0%, transparent 70%);
+      pointer-events: none; z-index: 0;
+    }
+    .hero-circle-1 { width: 600px; height: 600px; top: -200px; right: 10%; }
+    .hero-circle-2 { width: 300px; height: 300px; bottom: 10%; right: 30%; }
+
+    .hero-content {
+      position: relative; z-index: 2;
+      max-width: 600px;
+    }
+
+    .hero-eyebrow {
+      display: inline-flex; align-items: center; gap: 0.6rem;
+      padding: 0.35rem 1rem;
+      border: 1px solid rgba(242,183,5,0.35);
+      border-radius: 30px;
+      background: rgba(242,183,5,0.08);
+      font-size: 0.75rem; font-weight: 700;
+      letter-spacing: 0.14em; text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 1.8rem;
+    }
+    .hero-eyebrow::before {
+      content: ''; width: 6px; height: 6px; border-radius: 50%;
+      background: var(--gold);
+      animation: pulse 2s ease infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.4; transform: scale(0.7); }
+    }
+
+    .hero-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(3.5rem, 7vw, 6.5rem);
+      line-height: 0.95;
+      letter-spacing: 0.01em;
+      text-transform: uppercase;
+      margin-bottom: 1.6rem;
+    }
+    .hero-title em {
+      font-style: normal;
+      color: var(--gold);
+      display: block;
+    }
+
+    .hero-desc {
+      font-size: 1.05rem;
+      color: rgba(255,255,255,0.65);
+      line-height: 1.75;
+      max-width: 480px;
+      margin-bottom: 2.5rem;
+    }
+
+    .hero-actions {
+      display: flex; gap: 1rem; flex-wrap: wrap; align-items: center;
+    }
+    .btn-primary-lg {
+      padding: 1rem 2.2rem;
+      background: var(--gold);
+      border: none; border-radius: 10px;
+      color: var(--purple-dark);
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1.15rem; letter-spacing: 0.1em;
+      text-decoration: none; cursor: pointer;
+      transition: all 0.2s;
+      display: inline-flex; align-items: center; gap: 0.5rem;
+    }
+    .btn-primary-lg:hover { background: var(--gold-dark); transform: translateY(-2px); }
+    .btn-secondary-lg {
+      padding: 1rem 2.2rem;
+      border: 1.5px solid rgba(255,255,255,0.2);
+      border-radius: 10px;
+      color: var(--white);
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1.15rem; letter-spacing: 0.1em;
+      text-decoration: none;
+      transition: all 0.2s;
+    }
+    .btn-secondary-lg:hover { border-color: rgba(255,255,255,0.5); }
+
+    .hero-stats {
+      display: flex; gap: 3rem;
+      margin-top: 3.5rem;
+      padding-top: 2.5rem;
+      border-top: 1px solid rgba(255,255,255,0.1);
+    }
+    .hero-stat-value {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 2.8rem; line-height: 1;
+      color: var(--gold);
+    }
+    .hero-stat-label {
+      font-size: 0.78rem; color: var(--muted);
+      text-transform: uppercase; letter-spacing: 0.08em;
+      margin-top: 4px;
+    }
+
+    /* ── SECTION BASE ────────────────────────────────────── */
+    section { position: relative; z-index: 1; }
+    .section-inner { max-width: 1200px; margin: 0 auto; padding: 6rem 2rem; }
+
+    .section-tag {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      font-size: 0.72rem; font-weight: 700; letter-spacing: 0.14em;
+      text-transform: uppercase; color: var(--gold);
+      margin-bottom: 1rem;
+    }
+    .section-tag::before {
+      content: ''; width: 24px; height: 2px; background: var(--gold);
+    }
+    .section-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(2.5rem, 5vw, 4rem);
+      line-height: 1.05; letter-spacing: 0.02em;
+      margin-bottom: 1rem;
+    }
+    .section-title em { font-style: normal; color: var(--gold); }
+    .section-desc {
+      color: rgba(255,255,255,0.55);
+      font-size: 1rem; line-height: 1.8;
+      max-width: 560px;
+    }
+
+    /* ── ABOUT ───────────────────────────────────────────── */
+    .about { background: #130c20; }
+
+    .about-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 5rem; align-items: center;
+    }
+    .about-visual {
+      position: relative;
+    }
+    .about-card-main {
+      background: linear-gradient(135deg, var(--purple) 0%, var(--purple-light) 100%);
+      border-radius: 20px;
+      padding: 3rem;
+      position: relative; overflow: hidden;
+    }
+    .about-card-main::before {
+      content: 'SC';
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 10rem; line-height: 1;
+      color: rgba(255,255,255,0.04);
+      position: absolute; bottom: -20px; right: -10px;
+    }
+    .about-quote {
+      font-family: 'Barlow', sans-serif;
+      font-style: italic;
+      font-size: 1.4rem; line-height: 1.5;
+      color: var(--white);
+      margin-bottom: 1.5rem;
+    }
+    .about-quote span { color: var(--gold); font-style: normal; font-weight: 700; }
+    .about-pill {
+      display: inline-block;
+      padding: 0.4rem 1rem; border-radius: 20px;
+      background: rgba(242,183,5,0.15);
+      border: 1px solid rgba(242,183,5,0.25);
+      color: var(--gold); font-size: 0.8rem; font-weight: 600;
+    }
+
+    .about-float {
+      position: absolute; bottom: -24px; right: -24px;
+      background: var(--gold);
+      border-radius: 16px;
+      padding: 1.4rem 1.8rem;
+      color: var(--purple-dark);
+    }
+    .about-float-num {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 2.4rem; line-height: 1;
+    }
+    .about-float-txt {
+      font-size: 0.75rem; font-weight: 700;
+      text-transform: uppercase; letter-spacing: 0.06em;
+    }
+
+    .about-features {
+      display: flex; flex-direction: column; gap: 1.8rem;
+      margin-top: 2.5rem;
+    }
+    .about-feature {
+      display: flex; gap: 1.2rem; align-items: flex-start;
+    }
+    .about-feature-icon {
+      width: 44px; height: 44px; flex-shrink: 0;
+      background: rgba(242,183,5,0.1);
+      border: 1px solid rgba(242,183,5,0.2);
+      border-radius: 12px;
+      display: grid; place-items: center;
+      font-size: 1.2rem;
+    }
+    .about-feature-title { font-weight: 700; font-size: 1rem; margin-bottom: 4px; }
+    .about-feature-desc { color: var(--muted); font-size: 0.88rem; line-height: 1.6; }
+
+    /* ── SERVICES (CLASES) ───────────────────────────────── */
+    .services { background: var(--purple-dark); }
+
+    .services-header {
+      display: flex; align-items: flex-end; justify-content: space-between;
+      margin-bottom: 3.5rem;
+    }
+
+    .classes-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.2rem;
+    }
+
+    .class-card {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 18px;
+      padding: 2rem;
+      transition: all 0.3s;
+      cursor: default;
+      position: relative; overflow: hidden;
+    }
+    .class-card::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: linear-gradient(135deg, transparent 60%, var(--gold-glow));
+      opacity: 0; transition: opacity 0.3s;
+    }
+    .class-card:hover {
+      border-color: rgba(242,183,5,0.3);
+      transform: translateY(-4px);
+      box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+    }
+    .class-card:hover::before { opacity: 1; }
+
+    .class-card.featured {
+      background: linear-gradient(135deg, var(--purple) 0%, var(--purple-light) 100%);
+      border-color: rgba(242,183,5,0.25);
+      grid-row: span 2;
+    }
+
+    .class-emoji { font-size: 2.2rem; margin-bottom: 1.2rem; display: block; }
+    .class-name {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1.6rem; letter-spacing: 0.03em;
+      margin-bottom: 0.6rem;
+    }
+    .class-desc {
+      color: var(--muted); font-size: 0.88rem; line-height: 1.65;
+      margin-bottom: 1.5rem;
+    }
+    .class-meta {
+      display: flex; gap: 0.5rem; flex-wrap: wrap;
+    }
+    .class-tag {
+      padding: 0.25rem 0.65rem; border-radius: 20px;
+      font-size: 0.7rem; font-weight: 700; letter-spacing: 0.06em;
+      text-transform: uppercase;
+      background: rgba(255,255,255,0.06);
+      color: rgba(255,255,255,0.5);
+    }
+    .class-card.featured .class-tag {
+      background: rgba(242,183,5,0.15);
+      color: var(--gold);
+    }
+    .class-level {
+      padding: 0.25rem 0.65rem; border-radius: 20px;
+      font-size: 0.7rem; font-weight: 700;
+      background: rgba(242,183,5,0.1);
+      color: var(--gold);
+    }
+
+    /* ── COACHES ─────────────────────────────────────────── */
+    .coaches { background: #130c20; }
+
+    .coaches-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1.2rem;
+      margin-top: 3.5rem;
+    }
+    .coach-card {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 18px;
+      padding: 2rem 1.5rem;
+      text-align: center;
+      transition: all 0.3s;
+    }
+    .coach-card:hover {
+      border-color: rgba(242,183,5,0.25);
+      transform: translateY(-4px);
+    }
+    .coach-avatar {
+      width: 72px; height: 72px; border-radius: 50%;
+      margin: 0 auto 1.2rem;
+      display: grid; place-items: center;
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1.8rem;
+      border: 2px solid rgba(242,183,5,0.2);
+    }
+    .coach-name { font-weight: 700; font-size: 1rem; margin-bottom: 4px; }
+    .coach-specialty {
+      font-size: 0.8rem; color: var(--gold);
+      font-weight: 600; text-transform: uppercase;
+      letter-spacing: 0.06em; margin-bottom: 0.8rem;
+    }
+    .coach-desc { font-size: 0.82rem; color: var(--muted); line-height: 1.6; }
+
+    /* ── BENEFITS ────────────────────────────────────────── */
+    .benefits { background: var(--purple-dark); }
+
+    .benefits-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.5rem;
+      margin-top: 3.5rem;
+    }
+    .benefit-card {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 16px;
+      padding: 2rem;
+      transition: border-color 0.3s;
+    }
+    .benefit-card:hover { border-color: rgba(242,183,5,0.2); }
+    .benefit-icon {
+      font-size: 2rem; margin-bottom: 1rem; display: block;
+    }
+    .benefit-title {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 1.15rem; font-weight: 700;
+      letter-spacing: 0.04em; text-transform: uppercase;
+      margin-bottom: 0.6rem;
+    }
+    .benefit-desc { font-size: 0.88rem; color: var(--muted); line-height: 1.65; }
+
+    /* ── VISION ──────────────────────────────────────────── */
+    .vision {
+      background: linear-gradient(135deg, var(--purple) 0%, var(--purple-light) 50%, #5c3a88 100%);
+      position: relative; overflow: hidden;
+    }
+    .vision::before {
+      content: 'VISIÓN';
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(6rem, 15vw, 16rem);
+      color: rgba(255,255,255,0.04);
+      position: absolute; bottom: -40px; right: -20px;
+      line-height: 1; pointer-events: none;
+    }
+    .vision-inner {
+      max-width: 1200px; margin: 0 auto;
+      padding: 7rem 2rem;
+      display: grid; grid-template-columns: 1fr 1fr; gap: 5rem; align-items: center;
+    }
+    .vision-text .section-title { font-size: clamp(2.2rem, 4vw, 3.5rem); }
+    .vision-desc {
+      font-size: 1.05rem; line-height: 1.8;
+      color: rgba(255,255,255,0.7);
+      margin-top: 1.5rem;
+    }
+    .vision-pills {
+      display: flex; flex-direction: column; gap: 1rem;
+    }
+    .vision-pill {
+      display: flex; align-items: center; gap: 1rem;
+      padding: 1.2rem 1.5rem;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 14px;
+      transition: all 0.2s;
+    }
+    .vision-pill:hover {
+      background: rgba(242,183,5,0.1);
+      border-color: rgba(242,183,5,0.25);
+    }
+    .vision-pill-icon {
+      font-size: 1.4rem; flex-shrink: 0;
+    }
+    .vision-pill-text { font-size: 0.92rem; line-height: 1.5; color: rgba(255,255,255,0.8); }
+    .vision-pill-text strong { color: var(--white); }
+
+    /* ── SCHEDULE STRIP ──────────────────────────────────── */
+    .schedule-strip {
+      background: #0d0818;
+      border-top: 1px solid rgba(255,255,255,0.05);
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+    }
+    .schedule-inner { max-width: 1200px; margin: 0 auto; padding: 5rem 2rem; }
+    .schedule-table-wrap { overflow-x: auto; margin-top: 3rem; }
+    .schedule-table {
+      width: 100%; border-collapse: collapse;
+      min-width: 700px;
+    }
+    .schedule-table th {
+      padding: 0.7rem 1rem;
+      font-size: 0.72rem; font-weight: 700;
+      letter-spacing: 0.1em; text-transform: uppercase;
+      color: var(--muted);
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+      text-align: center;
+    }
+    .schedule-table td {
+      padding: 0.85rem 1rem;
+      text-align: center;
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+      font-size: 0.88rem;
+    }
+    .schedule-table .time-cell {
+      text-align: left; color: var(--muted);
+      font-size: 0.8rem; font-weight: 600;
+    }
+    .sch-pill {
+      display: inline-block;
+      padding: 0.35rem 0.8rem; border-radius: 20px;
+      font-size: 0.75rem; font-weight: 700;
+      background: rgba(242,183,5,0.12);
+      color: var(--gold);
+      border: 1px solid rgba(242,183,5,0.2);
+    }
+    .sch-pill.blue {
+      background: rgba(59,130,246,0.12); color: #60a5fa;
+      border-color: rgba(59,130,246,0.2);
+    }
+    .sch-pill.green {
+      background: rgba(34,197,94,0.12); color: #4ade80;
+      border-color: rgba(34,197,94,0.2);
+    }
+    .sch-pill.pink {
+      background: rgba(236,72,153,0.12); color: #f472b6;
+      border-color: rgba(236,72,153,0.2);
+    }
+
+    /* ── CTA ─────────────────────────────────────────────── */
+    .cta-section {
+      background: var(--purple-dark);
+      text-align: center;
+    }
+    .cta-inner {
+      max-width: 720px; margin: 0 auto;
+      padding: 7rem 2rem;
+    }
+    .cta-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(2.8rem, 6vw, 5rem);
+      line-height: 1.05; margin-bottom: 1.2rem;
+    }
+    .cta-title em { font-style: normal; color: var(--gold); }
+    .cta-desc { color: var(--muted); font-size: 1rem; line-height: 1.8; margin-bottom: 2.5rem; }
+    .cta-actions { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
+
+    /* ── FOOTER ──────────────────────────────────────────── */
+    footer {
+      background: #0a0614;
+      border-top: 1px solid rgba(255,255,255,0.06);
+      padding: 3rem 4rem;
+      display: flex; align-items: center; justify-content: space-between;
+      flex-wrap: wrap; gap: 1.5rem;
+    }
+    .footer-logo img { height: 36px; }
+    .footer-links {
+      display: flex; gap: 2rem; list-style: none;
+    }
+    .footer-links a {
+      color: var(--muted); text-decoration: none;
+      font-size: 0.85rem; transition: color 0.2s;
+    }
+    .footer-links a:hover { color: var(--white); }
+    .footer-copy { color: var(--muted); font-size: 0.8rem; }
+
+    /* ── SCROLL ANIMATIONS ───────────────────────────────── */
+    .reveal {
+      opacity: 0; transform: translateY(32px);
+      transition: opacity 0.7s ease, transform 0.7s ease;
+    }
+    .reveal.visible {
+      opacity: 1; transform: translateY(0);
+    }
+    .reveal-delay-1 { transition-delay: 0.1s; }
+    .reveal-delay-2 { transition-delay: 0.2s; }
+    .reveal-delay-3 { transition-delay: 0.3s; }
+    .reveal-delay-4 { transition-delay: 0.4s; }
+    .reveal-delay-5 { transition-delay: 0.5s; }
+
+    /* ── HERO ENTRANCE ANIMATIONS ────────────────────────── */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(30px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .hero-eyebrow { animation: fadeUp 0.7s ease 0.1s both; }
+    .hero-title   { animation: fadeUp 0.7s ease 0.25s both; }
+    .hero-desc    { animation: fadeUp 0.7s ease 0.4s both; }
+    .hero-actions { animation: fadeUp 0.7s ease 0.55s both; }
+    .hero-stats   { animation: fadeUp 0.7s ease 0.7s both; }
+
+    /* ── DIAGONAL DIVIDER ────────────────────────────────── */
+    .divider-gold {
+      width: 100%; height: 4px;
+      background: linear-gradient(90deg, transparent, var(--gold), transparent);
+    }
+
+    /* ── RESPONSIVE ──────────────────────────────────────── */
+    @media (max-width: 1024px) {
+      .navbar { padding: 1rem 2rem; }
+      .navbar.scrolled { padding: 0.8rem 2rem; }
+      .hero { padding: 8rem 2rem 4rem; }
+      .about-grid, .vision-inner { grid-template-columns: 1fr; gap: 3rem; }
+      .classes-grid { grid-template-columns: 1fr 1fr; }
+      .class-card.featured { grid-row: span 1; }
+      .coaches-grid { grid-template-columns: 1fr 1fr; }
+      .benefits-grid { grid-template-columns: 1fr 1fr; }
+    }
+    @media (max-width: 640px) {
+      .nav-links { display: none; }
+      .hero::before { width: 100%; clip-path: none; opacity: 0.3; }
+      .hero::after { display: none; }
+      .classes-grid, .coaches-grid, .benefits-grid { grid-template-columns: 1fr; }
+      .services-header { flex-direction: column; align-items: flex-start; gap: 1rem; }
+      footer { flex-direction: column; align-items: flex-start; padding: 2rem; }
+      .hero-stats { flex-wrap: wrap; gap: 1.5rem; }
+    }
+  </style>
 </head>
 <body>
+
+  <!-- ── NAVBAR ─────────────────────────────────────────── -->
+  <nav class="navbar" id="navbar">
+    <div class="nav-logo">
+      <a href="#"><img src="logo.png" alt="SportClub" /></a>
+    </div>
+    <ul class="nav-links">
+      <li><a href="#nosotros">Nosotros</a></li>
+      <li><a href="#clases">Clases</a></li>
+      <li><a href="#coaches">Coaches</a></li>
+      <li><a href="#horarios">Horarios</a></li>
+      <li><a href="#vision">Visión</a></li>
+    </ul>
+    <div class="nav-cta">
+      <a href="login.html" class="btn-outline">Iniciar sesión</a>
+      <a href="register.html" class="btn-gold">Únete ahora</a>
+    </div>
+  </nav>
+
+  <!-- ── HERO ───────────────────────────────────────────── -->
+  <section class="hero">
+    <div class="hero-circle hero-circle-1"></div>
+    <div class="hero-circle hero-circle-2"></div>
+    <div class="hero-ghost">SC</div>
+
+    <div class="hero-content">
+      <div class="hero-eyebrow">Bienvenido a SportClub</div>
+
+      <h1 class="hero-title">
+        Tu mejor<br>versión<br><em>comienza hoy.</em>
+      </h1>
+
+      <p class="hero-desc">
+        En SportClub creemos que el deporte no solo transforma el cuerpo,
+        sino también la mente y el estilo de vida. Somos una comunidad
+        enfocada en el bienestar, el compromiso y la superación personal.
+      </p>
+
+      <div class="hero-actions">
+        <a href="register.html" class="btn-primary-lg">Empieza gratis →</a>
+        <a href="#clases" class="btn-secondary-lg">Ver clases</a>
+      </div>
+
+      <div class="hero-stats">
+        <div>
+          <div class="hero-stat-value">1200+</div>
+          <div class="hero-stat-label">Miembros activos</div>
+        </div>
+        <div>
+          <div class="hero-stat-value">40+</div>
+          <div class="hero-stat-label">Clases por semana</div>
+        </div>
+        <div>
+          <div class="hero-stat-value">15</div>
+          <div class="hero-stat-label">Coaches expertos</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="divider-gold"></div>
+
+  <!-- ── NOSOTROS ────────────────────────────────────────── -->
+  <section class="about" id="nosotros">
+    <div class="section-inner">
+      <div class="about-grid">
+
+        <div class="about-visual reveal">
+          <div class="about-card-main">
+            <p class="about-quote">
+              "En SportClub no solo vienes a entrenar…<br>
+              vienes a crecer, a superarte y a construir
+              <span>tu mejor versión.</span>"
+            </p>
+            <span class="about-pill">Nuestra filosofía</span>
+          </div>
+          <div class="about-float">
+            <div class="about-float-num">8+</div>
+            <div class="about-float-txt">Años de<br>experiencia</div>
+          </div>
+        </div>
+
+        <div>
+          <div class="section-tag reveal">Quiénes somos</div>
+          <h2 class="section-title reveal reveal-delay-1">
+            Más que un club.<br><em>Una comunidad.</em>
+          </h2>
+          <p class="section-desc reveal reveal-delay-2">
+            Somos un club deportivo comprometido con el bienestar integral de cada persona.
+            Sin importar tu nivel o experiencia, te acompañamos en cada etapa de tu proceso.
+          </p>
+
+          <div class="about-features">
+            <div class="about-feature reveal reveal-delay-2">
+              <div class="about-feature-icon">🎯</div>
+              <div>
+                <div class="about-feature-title">Programas personalizados</div>
+                <div class="about-feature-desc">Cada miembro recibe un plan adaptado a sus objetivos, nivel físico e historial deportivo.</div>
+              </div>
+            </div>
+            <div class="about-feature reveal reveal-delay-3">
+              <div class="about-feature-icon">👥</div>
+              <div>
+                <div class="about-feature-title">Comunidad motivadora</div>
+                <div class="about-feature-desc">Un ambiente positivo donde cada entrenamiento se convierte en una experiencia colectiva.</div>
+              </div>
+            </div>
+            <div class="about-feature reveal reveal-delay-4">
+              <div class="about-feature-icon">💻</div>
+              <div>
+                <div class="about-feature-title">Tecnología al servicio del deporte</div>
+                <div class="about-feature-desc">Reserva clases, sigue tu progreso y gestiona tu cuenta desde nuestra plataforma digital.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ── CLASES ──────────────────────────────────────────── -->
+  <section class="services" id="clases">
+    <div class="section-inner">
+      <div class="services-header">
+        <div>
+          <div class="section-tag reveal">Nuestras clases</div>
+          <h2 class="section-title reveal reveal-delay-1">Lo que <em>ofrecemos</em></h2>
+          <p class="section-desc reveal reveal-delay-2">Disciplinas para todos los niveles, horarios flexibles y coaches especializados.</p>
+        </div>
+        <a href="register.html" class="btn-gold reveal reveal-delay-2" style="white-space:nowrap; flex-shrink:0;">Reservar clase →</a>
+      </div>
+
+      <div class="classes-grid">
+
+        <div class="class-card featured reveal">
+          <span class="class-emoji">🏋️</span>
+          <div class="class-name">CrossFit</div>
+          <p class="class-desc">
+            Entrenamiento funcional de alta intensidad que combina fuerza, resistencia y agilidad.
+            Ideal para quienes buscan un reto constante y resultados visibles.
+          </p>
+          <div class="class-meta">
+            <span class="class-tag">Lun · Mié · Vie</span>
+            <span class="class-tag">07:00 – 08:00</span>
+            <span class="class-level">Todos los niveles</span>
+          </div>
+        </div>
+
+        <div class="class-card reveal reveal-delay-1">
+          <span class="class-emoji">🧘</span>
+          <div class="class-name">Yoga Flow</div>
+          <p class="class-desc">
+            Movimiento, respiración y equilibrio mental. Perfecto para recuperarte y conectar con tu cuerpo.
+          </p>
+          <div class="class-meta">
+            <span class="class-tag">Mar · Jue</span>
+            <span class="class-tag">08:30 – 09:30</span>
+          </div>
+        </div>
+
+        <div class="class-card reveal reveal-delay-2">
+          <span class="class-emoji">🚴</span>
+          <div class="class-name">Spinning</div>
+          <p class="class-desc">
+            Cardio intenso sobre bicicleta estática con música y motivación al máximo nivel.
+          </p>
+          <div class="class-meta">
+            <span class="class-tag">Lun · Mié</span>
+            <span class="class-tag">18:00 – 19:00</span>
+          </div>
+        </div>
+
+        <div class="class-card reveal reveal-delay-1">
+          <span class="class-emoji">💥</span>
+          <div class="class-name">HIIT Power</div>
+          <p class="class-desc">
+            Intervalos de alta intensidad que queman grasa y construyen resistencia cardiovascular en tiempo récord.
+          </p>
+          <div class="class-meta">
+            <span class="class-tag">Mar · Jue · Vie</span>
+            <span class="class-tag">19:00 – 20:00</span>
+          </div>
+        </div>
+
+        <div class="class-card reveal reveal-delay-2">
+          <span class="class-emoji">🥊</span>
+          <div class="class-name">Boxeo Funcional</div>
+          <p class="class-desc">
+            Técnica de boxeo combinada con trabajo funcional. Coordinación, fuerza y mucha adrenalina.
+          </p>
+          <div class="class-meta">
+            <span class="class-tag">Sábado</span>
+            <span class="class-tag">10:00 – 11:30</span>
+          </div>
+        </div>
+
+        <div class="class-card reveal reveal-delay-3">
+          <span class="class-emoji">🔥</span>
+          <div class="class-name">Funcional Total</div>
+          <p class="class-desc">
+            Trabajo con el peso corporal y equipamiento funcional para desarrollar fuerza y movilidad real.
+          </p>
+          <div class="class-meta">
+            <span class="class-tag">Sábado</span>
+            <span class="class-tag">09:00 – 10:30</span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ── COACHES ─────────────────────────────────────────── -->
+  <section class="coaches" id="coaches">
+    <div class="section-inner">
+      <div style="text-align:center;">
+        <div class="section-tag reveal" style="justify-content:center;">Nuestro equipo</div>
+        <h2 class="section-title reveal reveal-delay-1">Coaches <em>especializados</em></h2>
+        <p class="section-desc reveal reveal-delay-2" style="margin:0 auto; text-align:center;">
+          Profesionales apasionados, certificados y comprometidos con tu progreso.
+        </p>
+      </div>
+
+      <div class="coaches-grid">
+        <div class="coach-card reveal reveal-delay-1">
+          <div class="coach-avatar" style="background:linear-gradient(135deg,#2E1A47,#F2B705);">RS</div>
+          <div class="coach-name">Roberto Silva</div>
+          <div class="coach-specialty">CrossFit · HIIT</div>
+          <p class="coach-desc">Certificado Level 2 CrossFit. 6 años formando atletas de alto rendimiento.</p>
+        </div>
+        <div class="coach-card reveal reveal-delay-2">
+          <div class="coach-avatar" style="background:linear-gradient(135deg,#1a4060,#3B82F6);">AL</div>
+          <div class="coach-name">Ana López</div>
+          <div class="coach-specialty">Yoga · Mindfulness</div>
+          <p class="coach-desc">Instructora certificada RYT-200. Especialista en yoga terapéutico y respiración.</p>
+        </div>
+        <div class="coach-card reveal reveal-delay-3">
+          <div class="coach-avatar" style="background:linear-gradient(135deg,#0f3320,#22c55e);">CP</div>
+          <div class="coach-name">Carlos Pinto</div>
+          <div class="coach-specialty">Spinning · Cardio</div>
+          <p class="coach-desc">Especialista en entrenamiento cardiovascular y ciclismo indoor con 8 años de experiencia.</p>
+        </div>
+        <div class="coach-card reveal reveal-delay-4">
+          <div class="coach-avatar" style="background:linear-gradient(135deg,#3d1040,#ec4899);">MT</div>
+          <div class="coach-name">María Torres</div>
+          <div class="coach-specialty">HIIT · Funcional</div>
+          <p class="coach-desc">Licenciada en Educación Física. Especialista en entrenamiento funcional y pérdida de peso.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── BENEFICIOS ──────────────────────────────────────── -->
+  <section class="benefits">
+    <div class="section-inner">
+      <div style="text-align:center; margin-bottom:0;">
+        <div class="section-tag reveal" style="justify-content:center;">¿Por qué elegirnos?</div>
+        <h2 class="section-title reveal reveal-delay-1">Beneficios de ser <em>parte</em></h2>
+      </div>
+
+      <div class="benefits-grid">
+        <div class="benefit-card reveal reveal-delay-1">
+          <span class="benefit-icon">📅</span>
+          <div class="benefit-title">Reservas online</div>
+          <p class="benefit-desc">Reserva tu clase favorita en segundos desde cualquier dispositivo, en cualquier momento.</p>
+        </div>
+        <div class="benefit-card reveal reveal-delay-2">
+          <span class="benefit-icon">📊</span>
+          <div class="benefit-title">Seguimiento de progreso</div>
+          <p class="benefit-desc">Visualiza tu evolución semana a semana con métricas claras de asistencia y rendimiento.</p>
+        </div>
+        <div class="benefit-card reveal reveal-delay-3">
+          <span class="benefit-icon">🎯</span>
+          <div class="benefit-title">Plan personalizado</div>
+          <p class="benefit-desc">Tu coach diseña un programa adaptado a tus objetivos, horarios y nivel de condición física.</p>
+        </div>
+        <div class="benefit-card reveal reveal-delay-1">
+          <span class="benefit-icon">🏆</span>
+          <div class="benefit-title">Comunidad activa</div>
+          <p class="benefit-desc">Únete a retos, eventos y actividades grupales que te mantendrán motivado todo el año.</p>
+        </div>
+        <div class="benefit-card reveal reveal-delay-2">
+          <span class="benefit-icon">⚡</span>
+          <div class="benefit-title">Horarios flexibles</div>
+          <p class="benefit-desc">Clases de madrugada, mañana, mediodía y noche. Nos adaptamos a tu vida, no al revés.</p>
+        </div>
+        <div class="benefit-card reveal reveal-delay-3">
+          <span class="benefit-icon">🔐</span>
+          <div class="benefit-title">Acceso seguro</div>
+          <p class="benefit-desc">Tu perfil, historial y reservas están protegidos en nuestra plataforma digital segura.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── HORARIOS ────────────────────────────────────────── -->
+  <section class="schedule-strip" id="horarios">
+    <div class="schedule-inner">
+      <div class="section-tag reveal">Horario semanal</div>
+      <h2 class="section-title reveal reveal-delay-1">Siempre hay <em>una clase para ti</em></h2>
+
+      <div class="schedule-table-wrap reveal reveal-delay-2">
+        <table class="schedule-table">
+          <thead>
+            <tr>
+              <th>Horario</th>
+              <th>Lunes</th>
+              <th>Martes</th>
+              <th>Miércoles</th>
+              <th>Jueves</th>
+              <th>Viernes</th>
+              <th>Sábado</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="time-cell">07:00 – 08:00</td>
+              <td><span class="sch-pill">CrossFit</span></td>
+              <td>—</td>
+              <td><span class="sch-pill">CrossFit</span></td>
+              <td>—</td>
+              <td><span class="sch-pill">CrossFit</span></td>
+              <td>—</td>
+            </tr>
+            <tr>
+              <td class="time-cell">08:30 – 09:30</td>
+              <td>—</td>
+              <td><span class="sch-pill green">Yoga Flow</span></td>
+              <td>—</td>
+              <td><span class="sch-pill green">Yoga Flow</span></td>
+              <td>—</td>
+              <td>—</td>
+            </tr>
+            <tr>
+              <td class="time-cell">09:00 – 10:30</td>
+              <td>—</td>
+              <td>—</td>
+              <td>—</td>
+              <td>—</td>
+              <td>—</td>
+              <td><span class="sch-pill">Funcional Total</span></td>
+            </tr>
+            <tr>
+              <td class="time-cell">10:00 – 11:30</td>
+              <td>—</td>
+              <td>—</td>
+              <td>—</td>
+              <td>—</td>
+              <td>—</td>
+              <td><span class="sch-pill pink">Boxeo Func.</span></td>
+            </tr>
+            <tr>
+              <td class="time-cell">18:00 – 19:00</td>
+              <td><span class="sch-pill blue">Spinning</span></td>
+              <td>—</td>
+              <td><span class="sch-pill blue">Spinning</span></td>
+              <td>—</td>
+              <td>—</td>
+              <td>—</td>
+            </tr>
+            <tr>
+              <td class="time-cell">19:00 – 20:00</td>
+              <td>—</td>
+              <td><span class="sch-pill pink">HIIT Power</span></td>
+              <td>—</td>
+              <td><span class="sch-pill pink">HIIT Power</span></td>
+              <td><span class="sch-pill pink">HIIT Power</span></td>
+              <td>—</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── VISIÓN ──────────────────────────────────────────── -->
+  <section class="vision" id="vision">
+    <div class="vision-inner">
+      <div class="vision-text">
+        <div class="section-tag reveal">Nuestra visión</div>
+        <h2 class="section-title reveal reveal-delay-1">
+          El club <em>referente</em> en formación integral.
+        </h2>
+        <p class="vision-desc reveal reveal-delay-2">
+          Queremos ser el club deportivo referente en la formación integral de personas,
+          combinando tecnología, entrenamiento y comunidad para mejorar la calidad de vida
+          de nuestros usuarios.
+        </p>
+      </div>
+
+      <div class="vision-pills">
+        <div class="vision-pill reveal reveal-delay-1">
+          <div class="vision-pill-icon">🚀</div>
+          <div class="vision-pill-text">
+            <strong>Tecnología + Deporte</strong><br>
+            Plataforma digital para reservas, seguimiento y comunicación con tu coach.
+          </div>
+        </div>
+        <div class="vision-pill reveal reveal-delay-2">
+          <div class="vision-pill-icon">🌎</div>
+          <div class="vision-pill-text">
+            <strong>Impacto real en la comunidad</strong><br>
+            Programas inclusivos para todas las edades y niveles de condición física.
+          </div>
+        </div>
+        <div class="vision-pill reveal reveal-delay-3">
+          <div class="vision-pill-icon">🏅</div>
+          <div class="vision-pill-text">
+            <strong>Excelencia en cada clase</strong><br>
+            Coaches certificados y metodologías actualizadas para maximizar tus resultados.
+          </div>
+        </div>
+        <div class="vision-pill reveal reveal-delay-4">
+          <div class="vision-pill-icon">💡</div>
+          <div class="vision-pill-text">
+            <strong>Innovación continua</strong><br>
+            Nuevas disciplinas, herramientas y programas diseñados para tu evolución.
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── CTA FINAL ───────────────────────────────────────── -->
+  <section class="cta-section">
+    <div class="cta-inner">
+      <div class="section-tag reveal" style="justify-content:center;">Únete hoy</div>
+      <h2 class="cta-title reveal reveal-delay-1">
+        ¿Listo para tu<br><em>mejor versión?</em>
+      </h2>
+      <p class="cta-desc reveal reveal-delay-2">
+        Regístrate gratis, elige tus clases y empieza a transformar tu vida.
+        Tu primer paso comienza aquí.
+      </p>
+      <div class="cta-actions reveal reveal-delay-3">
+        <a href="register.html" class="btn-primary-lg">Crear mi cuenta gratis →</a>
+        <a href="login.html" class="btn-secondary-lg">Ya tengo cuenta</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── FOOTER ──────────────────────────────────────────── -->
+  <footer>
+    <div class="footer-logo">
+      <a href="#"><img src="logo.png" alt="SportClub" /></a>
+    </div>
+    <ul class="footer-links">
+      <li><a href="#nosotros">Nosotros</a></li>
+      <li><a href="#clases">Clases</a></li>
+      <li><a href="#coaches">Coaches</a></li>
+      <li><a href="#horarios">Horarios</a></li>
+      <li><a href="login.html">Acceder</a></li>
+    </ul>
+    <p class="footer-copy">© 2025 SportClub. Tu mejor versión comienza hoy.</p>
+  </footer>
+
+  <!-- ── SCRIPTS ─────────────────────────────────────────── -->
+  <script>
+    // Navbar scroll effect
+    const navbar = document.getElementById('navbar');
+    window.addEventListener('scroll', () => {
+      navbar.classList.toggle('scrolled', window.scrollY > 60);
+    });
+
+    // Scroll reveal
+    const reveals = document.querySelectorAll('.reveal');
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.12 });
+    reveals.forEach(el => observer.observe(el));
+  </script>
+
 </body>
 </html>
