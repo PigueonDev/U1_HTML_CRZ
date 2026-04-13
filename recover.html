@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SportClub – Recuperar Contraseña</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body class="auth-body">
+
+  <div class="auth-panel">
+    <div class="auth-card">
+
+      <div class="auth-logo">
+        <a href="login.html"><img src="logo.png" alt="SportClub" style="height:56px; width:auto;" /></a>
+      </div>
+
+      <h1 class="auth-title">Recuperar contraseña</h1>
+      <p class="auth-subtitle">Ingresa tu correo y te enviaremos un enlace para restablecer tu contraseña.</p>
+
+      <div id="formSection">
+        <div class="form-group">
+          <label class="form-label">Correo electrónico</label>
+          <input type="email" id="emailInput" class="form-input" placeholder="tu@correo.com" />
+        </div>
+
+        <button class="btn-primary" onclick="sendRecovery()">Enviar enlace de recuperación</button>
+      </div>
+
+      <!-- Mensaje de confirmación (oculto por defecto) -->
+      <div id="confirmSection" style="display:none;">
+        <div class="confirm-box">
+          <div class="confirm-icon">✓</div>
+          <div class="confirm-text">
+            <strong>¡Enlace enviado!</strong>
+            Se ha enviado un enlace de recuperación a <span id="sentEmail" style="color:var(--gold);"></span>. Revisa tu bandeja de entrada y sigue las instrucciones.
+          </div>
+        </div>
+        <p style="font-size:0.82rem; color:rgba(255,255,255,0.35); margin-top:1rem; text-align:center; line-height:1.5;">
+          ¿No llegó el correo? Revisa tu carpeta de spam o
+          <a href="#" onclick="resetForm()" style="color:var(--gold); text-decoration:none;">intenta de nuevo</a>.
+        </p>
+      </div>
+
+      <div class="auth-links" style="justify-content:center; margin-top:1.8rem;">
+        <a href="login.html">← Volver al inicio de sesión</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="auth-visual">
+    <div class="auth-visual-tagline">
+      No te<em>detengas.</em>
+    </div>
+    <p class="auth-visual-sub">
+      En SportClub no solo vienes a entrenar… vienes a crecer, a superarte y a construir tu mejor versión.
+    </p>
+  </div>
+
+  <script>
+    function sendRecovery() {
+      const email = document.getElementById('emailInput').value.trim();
+      if (!email || !email.includes('@')) {
+        document.getElementById('emailInput').style.borderColor = '#f87171';
+        setTimeout(() => document.getElementById('emailInput').style.borderColor = '', 1500);
+        return;
+      }
+      document.getElementById('sentEmail').textContent = email;
+      document.getElementById('formSection').style.display = 'none';
+      document.getElementById('confirmSection').style.display = 'block';
+    }
+    function resetForm() {
+      document.getElementById('emailInput').value = '';
+      document.getElementById('formSection').style.display = 'block';
+      document.getElementById('confirmSection').style.display = 'none';
+    }
+  </script>
+</body>
+</html>

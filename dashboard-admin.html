@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SportClub – Dashboard Administrador</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body class="dash-body admin-theme">
+
+  <!-- SIDEBAR -->
+  <aside class="dash-sidebar">
+    <div class="sidebar-logo">
+      <a href="login.html"><img src="logo.png" alt="SportClub" style="height:40px; width:auto;" /></a>
+    </div>
+
+    <nav class="sidebar-nav">
+      <a class="nav-item active">
+        <span class="icon">🏠</span>
+        <span>Inicio</span>
+      </a>
+      <a class="nav-item" href="#">
+        <span class="icon">👤</span>
+        <span>Usuarios</span>
+      </a>
+      <a class="nav-item" href="#">
+        <span class="icon">📊</span>
+        <span>Estadísticas</span>
+      </a>
+      <a class="nav-item" href="#">
+        <span class="icon">📁</span>
+        <span>Reportes</span>
+      </a>
+      <a class="nav-item" href="#">
+        <span class="icon">⚙️</span>
+        <span>Configuración</span>
+      </a>
+    </nav>
+
+    <div class="sidebar-bottom">
+      <button class="btn-edit-profile">
+        <span class="icon">✏️</span>
+        <span>Editar perfil</span>
+      </button>
+      <a href="login.html" class="btn-logout">
+        <span class="icon">↩</span>
+        <span>Cerrar sesión</span>
+      </a>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="dash-main">
+
+    <div class="dash-header">
+      <div class="dash-header-left">
+        <h1>Panel de Administración</h1>
+        <p>Bienvenido, Admin · Martes, 08 de Abril 2025</p>
+      </div>
+      <span class="role-badge">Administrador</span>
+    </div>
+
+    <!-- Stats -->
+    <div class="stat-cards">
+      <div class="stat-card">
+        <div class="stat-value">1248</div>
+        <div class="stat-label">Usuarios totales</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value">15</div>
+        <div class="stat-label">Coaches activos</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value">42</div>
+        <div class="stat-label">Clases esta semana</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value">318</div>
+        <div class="stat-label">Reservas hoy</div>
+      </div>
+    </div>
+
+    <!-- Info cards -->
+    <div class="grid-3" style="margin-bottom:1.2rem;">
+      <div class="card" style="border-color:rgba(242,183,5,0.2); background:rgba(242,183,5,0.05);">
+        <div style="font-size:1.8rem; margin-bottom:0.5rem;">👥</div>
+        <div style="font-family:'Bebas Neue',sans-serif; font-size:1.4rem; color:var(--gold);">Usuarios activos</div>
+        <div style="font-size:2rem; font-family:'Bebas Neue',sans-serif; margin-top:0.3rem;">987</div>
+        <div style="font-size:0.78rem; color:var(--text-muted); margin-top:4px;">+34 esta semana</div>
+      </div>
+      <div class="card" style="border-color:rgba(34,197,94,0.2); background:rgba(34,197,94,0.04);">
+        <div style="font-size:1.8rem; margin-bottom:0.5rem;">📅</div>
+        <div style="font-family:'Bebas Neue',sans-serif; font-size:1.4rem; color:var(--coach-accent);">Clases del día</div>
+        <div style="font-size:2rem; font-family:'Bebas Neue',sans-serif; margin-top:0.3rem;">8</div>
+        <div style="font-size:0.78rem; color:var(--text-muted); margin-top:4px;">Próxima: CrossFit 07:00</div>
+      </div>
+      <div class="card" style="border-color:rgba(59,130,246,0.2); background:rgba(59,130,246,0.04);">
+        <div style="font-size:1.8rem; margin-bottom:0.5rem;">💰</div>
+        <div style="font-family:'Bebas Neue',sans-serif; font-size:1.4rem; color:var(--user-accent);">Ingresos mes</div>
+        <div style="font-size:2rem; font-family:'Bebas Neue',sans-serif; margin-top:0.3rem;">$4.2M</div>
+        <div style="font-size:0.78rem; color:var(--text-muted); margin-top:4px;">+12% vs mes anterior</div>
+      </div>
+    </div>
+
+    <div class="grid-2">
+
+      <!-- Gestión de usuarios -->
+      <div class="card">
+        <div class="card-title">Gestión de Usuarios</div>
+
+        <!-- Buscador -->
+        <div style="display:flex; gap:0.5rem; margin-bottom:1rem;">
+          <input type="text" class="form-input" placeholder="Buscar usuario..." style="flex:1; padding:0.6rem 0.9rem; font-size:0.88rem;" />
+          <button style="padding:0.6rem 1rem; border-radius:10px; background:var(--gold); border:none; color:var(--purple-dark); font-weight:700; cursor:pointer; font-size:0.88rem;">🔍</button>
+        </div>
+
+        <div class="user-row">
+          <div class="user-row-avatar" style="background:rgba(59,130,246,0.25);color:#60a5fa;">JM</div>
+          <div class="user-row-info">
+            <div class="name">Juan Martínez</div>
+            <div class="email"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="630916020d4d0e23060e020a0f4d000c0e">[email&#160;protected]</a></div>
+          </div>
+          <div class="user-row-role"><span class="role-pill usuario">Usuario</span></div>
+          <button class="btn-edit-row">Editar</button>
+        </div>
+        <div class="user-row">
+          <div class="user-row-avatar" style="background:rgba(34,197,94,0.2);color:#4ade80;">RS</div>
+          <div class="user-row-info">
+            <div class="name">Roberto Silva</div>
+            <div class="email"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="6e1c401d0702180f2e0b030f0702400d0103">[email&#160;protected]</a></div>
+          </div>
+          <div class="user-row-role"><span class="role-pill coach">Coach</span></div>
+          <button class="btn-edit-row">Editar</button>
+        </div>
+        <div class="user-row">
+          <div class="user-row-avatar" style="background:rgba(242,183,5,0.2);color:var(--gold);">AG</div>
+          <div class="user-row-info">
+            <div class="name">Andrea García</div>
+            <div class="email"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="b4d5d0d9dddaf4c7c4dbc6c0d7d8c1d69ad7d8">[email&#160;protected]</a></div>
+          </div>
+          <div class="user-row-role"><span class="role-pill admin">Admin</span></div>
+          <button class="btn-edit-row">Editar</button>
+        </div>
+        <div class="user-row">
+          <div class="user-row-avatar" style="background:rgba(59,130,246,0.25);color:#60a5fa;">VS</div>
+          <div class="user-row-info">
+            <div class="name">Valeria Soto</div>
+            <div class="email"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="33451d405c475c73565e525a5f1d505c5e">[email&#160;protected]</a></div>
+          </div>
+          <div class="user-row-role"><span class="role-pill usuario">Usuario</span></div>
+          <button class="btn-edit-row">Editar</button>
+        </div>
+        <div class="user-row">
+          <div class="user-row-avatar" style="background:rgba(34,197,94,0.2);color:#4ade80;">AL</div>
+          <div class="user-row-info">
+            <div class="name">Ana López</div>
+            <div class="email"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="1e7f3072716e7b645e7b737f7772307d7173">[email&#160;protected]</a></div>
+          </div>
+          <div class="user-row-role"><span class="role-pill coach">Coach</span></div>
+          <button class="btn-edit-row">Editar</button>
+        </div>
+      </div>
+
+      <!-- Reportes -->
+      <div class="card">
+        <div class="card-title">Reportes del Sistema</div>
+
+        <div style="display:flex; flex-direction:column; gap:0.8rem;">
+          <div style="display:flex; align-items:center; justify-content:space-between; padding:1rem; background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.07); border-radius:10px;">
+            <div>
+              <div style="font-weight:600; font-size:0.92rem;">📄 Informe Mensual – Abril 2025</div>
+              <div style="font-size:0.78rem; color:var(--text-muted); margin-top:3px;">Generado el 01 Abr 2025</div>
+            </div>
+            <button style="padding:0.4rem 0.9rem; border-radius:8px; border:1px solid rgba(242,183,5,0.3); background:rgba(242,183,5,0.1); color:var(--gold); font-size:0.8rem; cursor:pointer; font-weight:600;">Descargar</button>
+          </div>
+          <div style="display:flex; align-items:center; justify-content:space-between; padding:1rem; background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.07); border-radius:10px;">
+            <div>
+              <div style="font-weight:600; font-size:0.92rem;">📄 Informe Mensual – Marzo 2025</div>
+              <div style="font-size:0.78rem; color:var(--text-muted); margin-top:3px;">Generado el 01 Mar 2025</div>
+            </div>
+            <button style="padding:0.4rem 0.9rem; border-radius:8px; border:1px solid rgba(242,183,5,0.3); background:rgba(242,183,5,0.1); color:var(--gold); font-size:0.8rem; cursor:pointer; font-weight:600;">Descargar</button>
+          </div>
+          <div style="display:flex; align-items:center; justify-content:space-between; padding:1rem; background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.07); border-radius:10px;">
+            <div>
+              <div style="font-weight:600; font-size:0.92rem;">📊 Estadísticas de Asistencia Q1</div>
+              <div style="font-size:0.78rem; color:var(--text-muted); margin-top:3px;">Enero – Marzo 2025</div>
+            </div>
+            <button style="padding:0.4rem 0.9rem; border-radius:8px; border:1px solid rgba(242,183,5,0.3); background:rgba(242,183,5,0.1); color:var(--gold); font-size:0.8rem; cursor:pointer; font-weight:600;">Descargar</button>
+          </div>
+        </div>
+
+        <div style="margin-top:1.2rem; padding-top:1rem; border-top:1px solid rgba(255,255,255,0.08);">
+          <div class="card-title" style="margin-bottom:0.8rem;">⚙️ Configuración Rápida</div>
+          <div style="display:flex; flex-direction:column; gap:0.5rem;">
+            <button style="width:100%; padding:0.7rem 1rem; border-radius:10px; border:1px solid rgba(255,255,255,0.1); background:rgba(255,255,255,0.04); color:var(--white); text-align:left; cursor:pointer; font-family:'Barlow',sans-serif; font-size:0.88rem; display:flex; align-items:center; gap:0.7rem;">
+              <span>🔔</span> Gestionar notificaciones
+            </button>
+            <button style="width:100%; padding:0.7rem 1rem; border-radius:10px; border:1px solid rgba(255,255,255,0.1); background:rgba(255,255,255,0.04); color:var(--white); text-align:left; cursor:pointer; font-family:'Barlow',sans-serif; font-size:0.88rem; displa

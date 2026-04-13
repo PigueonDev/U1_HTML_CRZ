@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SportClub – Dashboard Usuario</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body class="dash-body user-theme">
+
+  <!-- SIDEBAR -->
+  <aside class="dash-sidebar">
+    <div class="sidebar-logo">
+      <a href="login.html"><img src="logo.png" alt="SportClub" style="height:40px; width:auto;" /></a>
+    </div>
+
+    <nav class="sidebar-nav">
+      <a class="nav-item active">
+        <span class="icon">🏠</span>
+        <span>Inicio</span>
+      </a>
+      <a class="nav-item" href="#">
+        <span class="icon">📅</span>
+        <span>Reservas</span>
+      </a>
+      <a class="nav-item" href="#">
+        <span class="icon">🏃</span>
+        <span>Clases</span>
+      </a>
+      <a class="nav-item" href="#">
+        <span class="icon">📈</span>
+        <span>Mi Progreso</span>
+      </a>
+    </nav>
+
+    <div class="sidebar-bottom">
+      <button class="btn-edit-profile">
+        <span class="icon">✏️</span>
+        <span>Editar perfil</span>
+      </button>
+      <a href="login.html" class="btn-logout">
+        <span class="icon">↩</span>
+        <span>Cerrar sesión</span>
+      </a>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="dash-main">
+
+    <div class="dash-header">
+      <div class="dash-header-left">
+        <h1>Mi Panel</h1>
+        <p>Martes, 08 de Abril 2025</p>
+      </div>
+      <span class="role-badge">Usuario</span>
+    </div>
+
+    <!-- Stats -->
+    <div class="stat-cards">
+      <div class="stat-card">
+        <div class="stat-value">12</div>
+        <div class="stat-label">Clases este mes</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value">3</div>
+        <div class="stat-label">Reservas activas</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value">87%</div>
+        <div class="stat-label">Asistencia</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value">6</div>
+        <div class="stat-label">Semanas seguidas</div>
+      </div>
+    </div>
+
+    <div class="grid-2" style="margin-bottom:1.2rem;">
+
+      <!-- Perfil -->
+      <div class="card">
+        <div class="card-title">Mi Perfil</div>
+        <div class="profile-block">
+          <div class="avatar">JM</div>
+          <div>
+            <div class="profile-name">Juan Martínez</div>
+            <div class="profile-email"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="b8d2cdd9d696d5d9caccd1d6ddc2f8ddd5d9d1d496dbd7d5">[email&#160;protected]</a></div>
+            <div class="profile-meta">
+              <span class="tag">CrossFit</span>
+              <span class="tag">Intermedio</span>
+            </div>
+          </div>
+        </div>
+        <div style="margin-top:1.2rem; padding-top:1rem; border-top:1px solid rgba(255,255,255,0.07);">
+          <div style="font-size:0.82rem; color:var(--text-muted); margin-bottom:0.4rem;">Objetivo personal</div>
+          <div style="font-size:0.9rem;">Ganar masa muscular y mejorar resistencia</div>
+        </div>
+      </div>
+
+      <!-- Mis Reservas -->
+      <div class="card">
+        <div class="card-title">Mis Reservas</div>
+        <div class="reservation-item">
+          <div class="res-dot"></div>
+          <div>
+            <div class="res-name">Clase de CrossFit</div>
+            <div class="res-date">Lunes 14 Abr · 18:00</div>
+          </div>
+          <div class="res-status">Confirmada</div>
+        </div>
+        <div class="reservation-item">
+          <div class="res-dot"></div>
+          <div>
+            <div class="res-name">Spinning Cardio</div>
+            <div class="res-date">Miércoles 16 Abr · 07:00</div>
+          </div>
+          <div class="res-status">Confirmada</div>
+        </div>
+        <div class="reservation-item">
+          <div class="res-dot" style="background:var(--gold);"></div>
+          <div>
+            <div class="res-name">HIIT Power</div>
+            <div class="res-date">Viernes 18 Abr · 19:00</div>
+          </div>
+          <div class="res-status" style="background:rgba(242,183,5,0.15);color:var(--gold);">Pendiente</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Clases disponibles -->
+    <div class="card">
+      <div class="card-title">Clases Disponibles</div>
+      <div class="class-list">
+        <div class="class-item">
+          <div class="class-info">
+            <div class="class-name">🏋️ CrossFit Matutino</div>
+            <div class="class-time">Lunes, Miércoles, Viernes · 07:00 – 08:00 · Coach: Roberto Silva</div>
+          </div>
+          <button class="btn-reserve">Reservar</button>
+        </div>
+        <div class="class-item">
+          <div class="class-info">
+            <div class="class-name">🧘 Yoga Flow</div>
+            <div class="class-time">Martes, Jueves · 08:30 – 09:30 · Coach: Ana López</div>
+          </div>
+          <button class="btn-reserve">Reservar</button>
+        </div>
+        <div class="class-item">
+          <div class="class-info">
+            <div class="class-name">🚴 Spinning Cardio</div>
+            <div class="class-time">Lunes, Miércoles · 18:00 – 19:00 · Coach: Carlos Pinto</div>
+          </div>
+          <button class="btn-reserve">Reservar</button>
+        </div>
+        <div class="class-item">
+          <div class="class-info">
+            <div class="class-name">💥 HIIT Power</div>
+            <div class="class-time">Martes, Jueves, Viernes · 19:00 – 20:00 · Coach: María Torres</div>
+          </div>
+          <button class="btn-reserve">Reservar</button>
+        </div>
+        <div class="class-item">
+          <div class="class-info">
+            <div class="class-name">🥊 Boxeo Funcional</div>
+            <div class="class-time">Sábado · 10:00 – 11:30 · Coach: Diego Morales</div>
+          </d
