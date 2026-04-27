@@ -11,37 +11,21 @@
   <!-- SIDEBAR -->
   <aside class="dash-sidebar">
     <div class="sidebar-logo">
-      <a href="login.html"><img src="logo.png" alt="SportClub" style="height:40px; width:auto;" /></a>
+      <a href="index.html"><img src="logo.png" alt="SportClub" style="height:40px; width:auto;" /></a>
     </div>
-
     <nav class="sidebar-nav">
-      <a class="nav-item active">
-        <span class="icon">🏠</span>
-        <span>Inicio</span>
-      </a>
-      <a class="nav-item" href="#">
-        <span class="icon">👥</span>
-        <span>Mis Alumnos</span>
-      </a>
-      <a class="nav-item" href="#">
-        <span class="icon">📋</span>
-        <span>Clases</span>
-      </a>
-      <a class="nav-item" href="#">
-        <span class="icon">📊</span>
-        <span>Reportes</span>
-      </a>
+      <a class="nav-item active"><span class="icon">🏠</span><span>Inicio</span></a>
+      <a class="nav-item" href="#"><span class="icon">👥</span><span>Mis Alumnos</span></a>
+      <a class="nav-item" href="#"><span class="icon">📋</span><span>Clases</span></a>
+      <a class="nav-item" href="#"><span class="icon">📊</span><span>Reportes</span></a>
     </nav>
-
     <div class="sidebar-bottom">
       <button class="btn-edit-profile">
-        <span class="icon">✏️</span>
-        <span>Editar perfil</span>
+        <span class="icon">✏️</span><span>Editar perfil</span>
       </button>
-      <a href="login.html" class="btn-logout">
-        <span class="icon">↩</span>
-        <span>Cerrar sesión</span>
-      </a>
+      <button class="btn-logout" onclick="cerrarSesion()">
+        <span class="icon">↩</span><span>Cerrar sesión</span>
+      </button>
     </div>
   </aside>
 
@@ -51,29 +35,17 @@
     <div class="dash-header">
       <div class="dash-header-left">
         <h1>Panel de Entrenador</h1>
-        <p>Bienvenido, Coach Roberto Silva · Martes, 08 de Abril 2025</p>
+        <p>Bienvenido, Coach <strong id="user-name">...</strong></p>
       </div>
       <span class="role-badge">Coach</span>
     </div>
 
     <!-- Stats -->
     <div class="stat-cards">
-      <div class="stat-card">
-        <div class="stat-value">24</div>
-        <div class="stat-label">Alumnos activos</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-value">5</div>
-        <div class="stat-label">Clases asignadas</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-value">38</div>
-        <div class="stat-label">Horas este mes</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-value">96%</div>
-        <div class="stat-label">Satisfacción</div>
-      </div>
+      <div class="stat-card"><div class="stat-value">24</div><div class="stat-label">Alumnos activos</div></div>
+      <div class="stat-card"><div class="stat-value">5</div><div class="stat-label">Clases asignadas</div></div>
+      <div class="stat-card"><div class="stat-value">38</div><div class="stat-label">Horas este mes</div></div>
+      <div class="stat-card"><div class="stat-value">96%</div><div class="stat-label">Satisfacción</div></div>
     </div>
 
     <div class="grid-2" style="margin-bottom:1.2rem;">
@@ -83,48 +55,43 @@
         <div class="card-title">Mis Alumnos</div>
         <table class="data-table">
           <thead>
-            <tr>
-              <th>Nombre</th>
-              <th>Correo</th>
-              <th>Nivel</th>
-              <th></th>
-            </tr>
+            <tr><th>Nombre</th><th>Correo</th><th>Nivel</th><th></th></tr>
           </thead>
           <tbody>
             <tr>
               <td><strong>Juan Martínez</strong></td>
-              <td style="color:var(--text-muted);"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="620817030c4c0f22070f030b0e4c010d0f">[email&#160;protected]</a></td>
+              <td style="color:var(--text-muted);">juan.m@email.com</td>
               <td><span class="role-pill coach">Intermedio</span></td>
               <td><button class="btn-edit-row">Ver</button></td>
             </tr>
             <tr>
               <td><strong>Valeria Soto</strong></td>
-              <td style="color:var(--text-muted);"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="4f39613c203b200f2a222e2623612c2022">[email&#160;protected]</a></td>
+              <td style="color:var(--text-muted);">v.soto@email.com</td>
               <td><span class="role-pill usuario">Principiante</span></td>
               <td><button class="btn-edit-row">Ver</button></td>
             </tr>
             <tr>
               <td><strong>Diego Reyes</strong></td>
-              <td style="color:var(--text-muted);"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="3c58124e5945594f7c59515d5550125f5351">[email&#160;protected]</a></td>
+              <td style="color:var(--text-muted);">d.reyes@email.com</td>
               <td><span class="role-pill admin">Avanzado</span></td>
               <td><button class="btn-edit-row">Ver</button></td>
             </tr>
             <tr>
               <td><strong>Camila Fuentes</strong></td>
-              <td style="color:var(--text-muted);"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="87e4a9e1f2e2e9f3e2f4c7e2eae6eeeba9e4e8ea">[email&#160;protected]</a></td>
+              <td style="color:var(--text-muted);">c.fuentes@email.com</td>
               <td><span class="role-pill usuario">Principiante</span></td>
               <td><button class="btn-edit-row">Ver</button></td>
             </tr>
             <tr>
               <td><strong>Andrés Mora</strong></td>
-              <td style="color:var(--text-muted);"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="1a7b347775687b5a7f777b737634797577">[email&#160;protected]</a></td>
+              <td style="color:var(--text-muted);">a.mora@email.com</td>
               <td><span class="role-pill coach">Intermedio</span></td>
               <td><button class="btn-edit-row">Ver</button></td>
             </tr>
           </tbody>
         </table>
-        <div style="margin-top:1rem; text-align:center;">
-          <a href="#" style="font-size:0.82rem; color:var(--coach-accent); text-decoration:none;">Ver todos los alumnos →</a>
+        <div style="margin-top:1rem;text-align:center;">
+          <a href="#" style="font-size:0.82rem;color:var(--coach-accent);text-decoration:none;">Ver todos los alumnos →</a>
         </div>
       </div>
 
@@ -137,21 +104,21 @@
               <div class="class-name">🏋️ CrossFit Matutino</div>
               <div class="class-time">Lunes, Miércoles, Viernes · 07:00 – 08:00</div>
             </div>
-            <span style="padding:0.3rem 0.7rem; border-radius:8px; background:rgba(34,197,94,0.15); color:var(--coach-accent); font-size:0.75rem; font-weight:700;">Activa</span>
+            <span style="padding:0.3rem 0.7rem;border-radius:8px;background:rgba(34,197,94,0.15);color:var(--coach-accent);font-size:0.75rem;font-weight:700;">Activa</span>
           </div>
           <div class="class-item">
             <div class="class-info">
               <div class="class-name">💥 HIIT Avanzado</div>
               <div class="class-time">Martes, Jueves · 19:00 – 20:00</div>
             </div>
-            <span style="padding:0.3rem 0.7rem; border-radius:8px; background:rgba(34,197,94,0.15); color:var(--coach-accent); font-size:0.75rem; font-weight:700;">Activa</span>
+            <span style="padding:0.3rem 0.7rem;border-radius:8px;background:rgba(34,197,94,0.15);color:var(--coach-accent);font-size:0.75rem;font-weight:700;">Activa</span>
           </div>
           <div class="class-item">
             <div class="class-info">
               <div class="class-name">🥊 Funcional Total</div>
               <div class="class-time">Sábado · 09:00 – 10:30</div>
             </div>
-            <span style="padding:0.3rem 0.7rem; border-radius:8px; background:rgba(242,183,5,0.12); color:var(--gold); font-size:0.75rem; font-weight:700;">Próxima</span>
+            <span style="padding:0.3rem 0.7rem;border-radius:8px;background:rgba(242,183,5,0.12);color:var(--gold);font-size:0.75rem;font-weight:700;">Próxima</span>
           </div>
         </div>
       </div>
@@ -175,4 +142,27 @@
         <div class="sch-cell empty"></div>
         <div class="sch-cell active">CrossFit<br><small>1h</small></div>
 
-        <div class=
+        <div class="sch-time">11:00</div>
+        <div class="sch-cell empty"></div>
+        <div class="sch-cell empty"></div>
+        <div class="sch-cell empty"></div>
+        <div class="sch-cell empty"></div>
+        <div class="sch-cell empty"></div>
+
+        <div class="sch-time">19:00</div>
+        <div class="sch-cell empty"></div>
+        <div class="sch-cell active">HIIT<br><small>1h</small></div>
+        <div class="sch-cell empty"></div>
+        <div class="sch-cell active">HIIT<br><small>1h</small></div>
+        <div class="sch-cell empty"></div>
+      </div>
+    </div>
+
+  </main>
+
+  <script src="js/users.js"></script>
+  <script src="js/dashboard.js"></script>
+  <script src="js/auth.js"></script>
+
+</body>
+</html>

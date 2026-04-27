@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>SportClub</title>
+  <title>SportClub – Iniciar Sesión</title>
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body class="auth-body">
@@ -12,7 +12,7 @@
   <div class="auth-panel">
     <div class="auth-card">
       <div class="auth-logo">
-        <a href="#"><img src="logo.png" alt="SportClub" style="height:56px; width:auto;" /></a>
+        <a href="index.html"><img src="logo.png" alt="SportClub" style="height:56px; width:auto;" /></a>
       </div>
 
       <h1 class="auth-title">Bienvenido de nuevo</h1>
@@ -20,15 +20,18 @@
 
       <div class="form-group">
         <label class="form-label">Correo electrónico</label>
-        <input type="email" class="form-input" placeholder="tu@correo.com" />
+        <input type="email" id="email" class="form-input" placeholder="tu@correo.com" />
       </div>
 
       <div class="form-group">
         <label class="form-label">Contraseña</label>
-        <input type="password" class="form-input" placeholder="••••••••" />
+        <input type="password" id="password" class="form-input" placeholder="••••••••" />
       </div>
 
-      <button class="btn-primary">Iniciar Sesión</button>
+      <!-- Mensaje de error (vacío por defecto, se llena con JS) -->
+      <p id="error-message" style="color:#f87171; font-size:0.88rem; margin-bottom:0.4rem; min-height:1.2em;"></p>
+
+      <button class="btn-primary" onclick="handleLogin()">Iniciar Sesión</button>
 
       <div class="auth-links">
         <a href="recover.html">¿Olvidaste tu contraseña?</a>
@@ -36,13 +39,22 @@
         <a href="register.html">Registrarse</a>
       </div>
 
-      <!-- Demo links -->
+      <!-- Cuentas de prueba -->
       <div style="margin-top:2rem; padding-top:1.5rem; border-top:1px solid rgba(255,255,255,0.08);">
-        <p style="font-size:0.75rem; color:rgba(255,255,255,0.3); text-align:center; margin-bottom:0.8rem; text-transform:uppercase; letter-spacing:0.08em;">Ver dashboards demo</p>
-        <div style="display:flex; gap:0.5rem; justify-content:center;">
-          <a href="dashboard-usuario.html" style="padding:0.4rem 0.9rem; border-radius:8px; background:rgba(59,130,246,0.15); color:#60a5fa; font-size:0.8rem; text-decoration:none; font-weight:600;">Usuario</a>
-          <a href="dashboard-coach.html" style="padding:0.4rem 0.9rem; border-radius:8px; background:rgba(34,197,94,0.15); color:#4ade80; font-size:0.8rem; text-decoration:none; font-weight:600;">Coach</a>
-          <a href="dashboard-admin.html" style="padding:0.4rem 0.9rem; border-radius:8px; background:rgba(242,183,5,0.15); color:#F2B705; font-size:0.8rem; text-decoration:none; font-weight:600;">Admin</a>
+        <p style="font-size:0.75rem; color:rgba(255,255,255,0.3); text-align:center; margin-bottom:0.8rem; text-transform:uppercase; letter-spacing:0.08em;">Cuentas de prueba</p>
+        <div style="display:flex; flex-direction:column; gap:0.4rem;">
+          <div style="display:flex; justify-content:space-between; align-items:center; padding:0.5rem 0.8rem; border-radius:8px; background:rgba(59,130,246,0.08); border:1px solid rgba(59,130,246,0.15);">
+            <span style="font-size:0.78rem; color:#60a5fa;">user1@sportclub.cl · 1234</span>
+            <span style="font-size:0.7rem; color:#60a5fa; font-weight:700;">USUARIO</span>
+          </div>
+          <div style="display:flex; justify-content:space-between; align-items:center; padding:0.5rem 0.8rem; border-radius:8px; background:rgba(34,197,94,0.08); border:1px solid rgba(34,197,94,0.15);">
+            <span style="font-size:0.78rem; color:#4ade80;">coach1@sportclub.cl · 1234</span>
+            <span style="font-size:0.7rem; color:#4ade80; font-weight:700;">COACH</span>
+          </div>
+          <div style="display:flex; justify-content:space-between; align-items:center; padding:0.5rem 0.8rem; border-radius:8px; background:rgba(242,183,5,0.08); border:1px solid rgba(242,183,5,0.15);">
+            <span style="font-size:0.78rem; color:#F2B705;">admin1@sportclub.cl · 1234</span>
+            <span style="font-size:0.7rem; color:#F2B705; font-weight:700;">ADMIN</span>
+          </div>
         </div>
       </div>
     </div>
@@ -71,6 +83,10 @@
       </div>
     </div>
   </div>
+
+  <!-- SCRIPTS al final del body -->
+  <script src="js/users.js"></script>
+  <script src="js/auth.js"></script>
 
 </body>
 </html>
