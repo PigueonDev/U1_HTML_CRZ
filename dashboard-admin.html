@@ -1,27 +1,180 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>SportClub – Dashboard Administrador</title>
-  <link rel="stylesheet" href="styles.css" />
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>SportClub – Administrador</title>
+  <link rel="stylesheet" href="styles.css"/>
+  <style>
+    .sidebar-avatar {
+      width:48px; height:48px; border-radius:50%;
+      background:linear-gradient(135deg,var(--purple-light),var(--gold));
+      display:grid; place-items:center;
+      font-family:'Bebas Neue',sans-serif; font-size:1.1rem;
+      border:2px solid rgba(242,183,5,0.3);
+      overflow:hidden; flex-shrink:0;
+    }
+    .sidebar-avatar img { width:100%; height:100%; object-fit:cover; display:none; }
+    .sidebar-avatar img.loaded { display:block; }
+    .sidebar-user-info {
+      padding:0 1.5rem 1.2rem;
+      border-bottom:1px solid rgba(255,255,255,0.08);
+      margin-bottom:1rem;
+      display:flex; align-items:center; gap:0.8rem;
+    }
+    .sidebar-user-name { font-size:0.88rem; font-weight:600; }
+    .sidebar-user-role { font-size:0.72rem; color:var(--text-muted); }
+
+    /* Tabla */
+    .module-header {
+      display:flex; align-items:flex-start; justify-content:space-between;
+      margin-bottom:1.8rem; flex-wrap:wrap; gap:1rem;
+    }
+    .module-title { font-family:'Bebas Neue',sans-serif; font-size:1.8rem; letter-spacing:0.03em; }
+    .module-desc  { color:var(--text-muted); font-size:0.88rem; margin-top:2px; }
+    .btn-new {
+      display:flex; align-items:center; gap:0.5rem;
+      padding:0.65rem 1.3rem; background:var(--gold);
+      border:none; border-radius:10px; color:var(--purple-dark);
+      font-family:'Bebas Neue',sans-serif; font-size:1rem;
+      letter-spacing:0.06em; cursor:pointer; transition:background 0.2s;
+      white-space:nowrap;
+    }
+    .btn-new:hover { background:var(--gold-dark); }
+
+    .table-wrap { overflow-x:auto; }
+    .users-table { width:100%; border-collapse:collapse; min-width:620px; }
+    .users-table th {
+      text-align:left; padding:0.7rem 1rem;
+      font-size:0.72rem; font-weight:700; letter-spacing:0.1em; text-transform:uppercase;
+      color:var(--text-muted); border-bottom:1px solid rgba(255,255,255,0.08);
+    }
+    .users-table td {
+      padding:0.9rem 1rem; font-size:0.9rem;
+      border-bottom:1px solid rgba(255,255,255,0.04); vertical-align:middle;
+    }
+    .users-table tr:last-child td { border-bottom:none; }
+    .users-table tr:hover td { background:rgba(255,255,255,0.02); }
+
+    /* Avatar en tabla */
+    .table-avatar {
+      width:34px; height:34px; border-radius:50%;
+      display:inline-grid; place-items:center;
+      font-family:'Bebas Neue',sans-serif; font-size:0.85rem;
+      overflow:hidden; vertical-align:middle; margin-right:0.6rem;
+      flex-shrink:0;
+    }
+    .table-avatar img { width:100%; height:100%; object-fit:cover; display:none; }
+    .table-avatar img.loaded { display:block; }
+    .table-name-cell { display:flex; align-items:center; }
+
+    .badge {
+      display:inline-block; padding:0.22rem 0.75rem; border-radius:20px;
+      font-size:0.7rem; font-weight:700; letter-spacing:0.06em; text-transform:uppercase;
+    }
+    .badge-admin { background:rgba(239,68,68,0.18);  color:#f87171; }
+    .badge-coach { background:rgba(59,130,246,0.18); color:#60a5fa; }
+    .badge-user  { background:rgba(34,197,94,0.18);  color:#4ade80; }
+
+    .btn-action {
+      width:34px; height:34px; border-radius:8px; border:none;
+      cursor:pointer; display:inline-grid; place-items:center;
+      font-size:1rem; transition:all 0.2s; margin-right:4px;
+    }
+    .btn-edit   { background:rgba(59,130,246,0.18); color:#60a5fa; }
+    .btn-edit:hover   { background:#3B82F6; color:#fff; }
+    .btn-delete { background:rgba(239,68,68,0.18);  color:#f87171; }
+    .btn-delete:hover { background:#ef4444; color:#fff; }
+
+    /* Modal */
+    .modal-backdrop {
+      display:none; position:fixed; inset:0; z-index:200;
+      background:rgba(0,0,0,0.75); backdrop-filter:blur(6px);
+      align-items:center; justify-content:center; padding:1rem;
+    }
+    .modal-backdrop.open { display:flex; }
+    .modal {
+      background:#1e1231; border:1px solid rgba(255,255,255,0.1);
+      border-radius:20px; padding:2rem; width:100%; max-width:460px;
+      position:relative; animation:fadeUp 0.3s ease both;
+    }
+    .modal-title {
+      font-family:'Bebas Neue',sans-serif; font-size:1.5rem;
+      letter-spacing:0.04em; margin-bottom:1.5rem;
+    }
+    .modal-close {
+      position:absolute; top:1rem; right:1rem;
+      background:rgba(255,255,255,0.08); border:none; border-radius:8px;
+      color:var(--text-muted); width:32px; height:32px;
+      cursor:pointer; font-size:1rem; display:grid; place-items:center;
+    }
+    .modal-close:hover { background:rgba(255,255,255,0.16); color:#fff; }
+    .modal-footer { display:flex; gap:0.8rem; justify-content:flex-end; margin-top:1.5rem; }
+    .btn-cancel-modal {
+      padding:0.65rem 1.3rem; border-radius:10px;
+      border:1px solid rgba(255,255,255,0.15); background:transparent;
+      color:var(--text-muted); cursor:pointer;
+      font-family:'Barlow',sans-serif; font-size:0.9rem; transition:all 0.2s;
+    }
+    .btn-cancel-modal:hover { color:#fff; }
+    .btn-save-modal {
+      padding:0.65rem 1.4rem; border-radius:10px; border:none;
+      background:var(--gold); color:var(--purple-dark);
+      font-family:'Bebas Neue',sans-serif; font-size:1rem;
+      letter-spacing:0.06em; cursor:pointer; transition:background 0.2s;
+    }
+    .btn-save-modal:hover { background:var(--gold-dark); }
+
+    .field-error { color:#f87171; font-size:0.78rem; margin-top:4px; display:none; }
+    .input-error { border-color:#f87171 !important; }
+
+    /* Toast */
+    .toast {
+      position:fixed; bottom:2rem; right:2rem; z-index:400;
+      padding:0.9rem 1.6rem; border-radius:12px;
+      font-size:0.9rem; font-weight:600; pointer-events:none;
+      transform:translateY(80px); opacity:0; transition:all 0.3s ease;
+    }
+    .toast.show { transform:translateY(0); opacity:1; }
+    .toast.success { background:#22c55e; color:#052e16; }
+    .toast.error   { background:#ef4444; color:#2a0a0a; }
+
+    .state-row td {
+      text-align:center; padding:2.5rem 1rem;
+      color:var(--text-muted); font-size:0.9rem;
+    }
+  </style>
 </head>
 <body class="dash-body admin-theme">
 
   <!-- SIDEBAR -->
   <aside class="dash-sidebar">
     <div class="sidebar-logo">
-      <a href="index.html"><img src="logo.png" alt="SportClub" style="height:40px; width:auto;" /></a>
+      <a href="index.html"><img src="logo.png" alt="SportClub" style="height:40px;width:auto;"/></a>
     </div>
+
+    <!-- Mini perfil con foto -->
+    <div class="sidebar-user-info">
+      <div class="sidebar-avatar">
+        <img id="sidebar-avatar-img" src="" alt=""/>
+        <span id="sidebar-avatar-init">?</span>
+      </div>
+      <div>
+        <div class="sidebar-user-name" id="sidebar-name">...</div>
+        <div class="sidebar-user-role">Administrador</div>
+      </div>
+    </div>
+
     <nav class="sidebar-nav">
-      <a class="nav-item active"><span class="icon">🏠</span><span>Inicio</span></a>
-      <a class="nav-item" href="#"><span class="icon">👤</span><span>Usuarios</span></a>
+      <a class="nav-item" href="#"><span class="icon">🏠</span><span>Inicio</span></a>
+      <a class="nav-item active"><span class="icon">👤</span><span>Usuarios</span></a>
       <a class="nav-item" href="#"><span class="icon">📊</span><span>Estadísticas</span></a>
       <a class="nav-item" href="#"><span class="icon">📁</span><span>Reportes</span></a>
-      <a class="nav-item" href="#"><span class="icon">⚙️</span><span>Configuración</span></a>
+      <a class="nav-item" href="perfil.html"><span class="icon">🙍</span><span>Perfil</span></a>
     </nav>
+
     <div class="sidebar-bottom">
-      <button class="btn-edit-profile">
+      <button class="btn-edit-profile" onclick="window.location.href='perfil.html'">
         <span class="icon">✏️</span><span>Editar perfil</span>
       </button>
       <button class="btn-logout" onclick="cerrarSesion()">
@@ -42,123 +195,322 @@
     </div>
 
     <!-- Stats -->
-    <div class="stat-cards">
-      <div class="stat-card"><div class="stat-value">1248</div><div class="stat-label">Usuarios totales</div></div>
-      <div class="stat-card"><div class="stat-value">15</div><div class="stat-label">Coaches activos</div></div>
-      <div class="stat-card"><div class="stat-value">42</div><div class="stat-label">Clases esta semana</div></div>
-      <div class="stat-card"><div class="stat-value">318</div><div class="stat-label">Reservas hoy</div></div>
+    <div class="stat-cards" style="margin-bottom:1.5rem;">
+      <div class="stat-card"><div class="stat-value" id="stat-total">—</div><div class="stat-label">Usuarios totales</div></div>
+      <div class="stat-card"><div class="stat-value" id="stat-user">—</div><div class="stat-label">Usuarios</div></div>
+      <div class="stat-card"><div class="stat-value" id="stat-coach">—</div><div class="stat-label">Coaches</div></div>
+      <div class="stat-card"><div class="stat-value" id="stat-admin">—</div><div class="stat-label">Administradores</div></div>
     </div>
 
-    <!-- Info cards -->
-    <div class="grid-3" style="margin-bottom:1.2rem;">
-      <div class="card" style="border-color:rgba(242,183,5,0.2);background:rgba(242,183,5,0.05);">
-        <div style="font-size:1.8rem;margin-bottom:0.5rem;">👥</div>
-        <div style="font-family:'Bebas Neue',sans-serif;font-size:1.4rem;color:var(--gold);">Usuarios activos</div>
-        <div style="font-size:2rem;font-family:'Bebas Neue',sans-serif;margin-top:0.3rem;">987</div>
-        <div style="font-size:0.78rem;color:var(--text-muted);margin-top:4px;">+34 esta semana</div>
-      </div>
-      <div class="card" style="border-color:rgba(34,197,94,0.2);background:rgba(34,197,94,0.04);">
-        <div style="font-size:1.8rem;margin-bottom:0.5rem;">📅</div>
-        <div style="font-family:'Bebas Neue',sans-serif;font-size:1.4rem;color:var(--coach-accent);">Clases del día</div>
-        <div style="font-size:2rem;font-family:'Bebas Neue',sans-serif;margin-top:0.3rem;">8</div>
-        <div style="font-size:0.78rem;color:var(--text-muted);margin-top:4px;">Próxima: CrossFit 07:00</div>
-      </div>
-      <div class="card" style="border-color:rgba(59,130,246,0.2);background:rgba(59,130,246,0.04);">
-        <div style="font-size:1.8rem;margin-bottom:0.5rem;">💰</div>
-        <div style="font-family:'Bebas Neue',sans-serif;font-size:1.4rem;color:var(--user-accent);">Ingresos mes</div>
-        <div style="font-size:2rem;font-family:'Bebas Neue',sans-serif;margin-top:0.3rem;">$4.2M</div>
-        <div style="font-size:0.78rem;color:var(--text-muted);margin-top:4px;">+12% vs mes anterior</div>
-      </div>
-    </div>
-
-    <div class="grid-2">
-      <!-- Gestión de usuarios -->
-      <div class="card">
-        <div class="card-title">Gestión de Usuarios</div>
-        <div style="display:flex;gap:0.5rem;margin-bottom:1rem;">
-          <input type="text" class="form-input" placeholder="Buscar usuario..." style="flex:1;padding:0.6rem 0.9rem;font-size:0.88rem;" />
-          <button style="padding:0.6rem 1rem;border-radius:10px;background:var(--gold);border:none;color:var(--purple-dark);font-weight:700;cursor:pointer;font-size:0.88rem;">🔍</button>
+    <!-- Módulo Usuarios -->
+    <div class="card">
+      <div class="module-header">
+        <div>
+          <div class="module-title">👥 Gestión de Usuarios</div>
+          <div class="module-desc">Administra los usuarios del sistema</div>
         </div>
-        <div class="user-row">
-          <div class="user-row-avatar" style="background:rgba(59,130,246,0.25);color:#60a5fa;">JM</div>
-          <div class="user-row-info"><div class="name">Juan Martínez</div><div class="email">juan.m@email.com</div></div>
-          <div class="user-row-role"><span class="role-pill usuario">Usuario</span></div>
-          <button class="btn-edit-row">Editar</button>
-        </div>
-        <div class="user-row">
-          <div class="user-row-avatar" style="background:rgba(34,197,94,0.2);color:#4ade80;">RS</div>
-          <div class="user-row-info"><div class="name">Roberto Silva</div><div class="email">r.silva@email.com</div></div>
-          <div class="user-row-role"><span class="role-pill coach">Coach</span></div>
-          <button class="btn-edit-row">Editar</button>
-        </div>
-        <div class="user-row">
-          <div class="user-row-avatar" style="background:rgba(242,183,5,0.2);color:var(--gold);">AG</div>
-          <div class="user-row-info"><div class="name">Andrea García</div><div class="email">admin@sportclub.cl</div></div>
-          <div class="user-row-role"><span class="role-pill admin">Admin</span></div>
-          <button class="btn-edit-row">Editar</button>
-        </div>
-        <div class="user-row">
-          <div class="user-row-avatar" style="background:rgba(59,130,246,0.25);color:#60a5fa;">VS</div>
-          <div class="user-row-info"><div class="name">Valeria Soto</div><div class="email">v.soto@email.com</div></div>
-          <div class="user-row-role"><span class="role-pill usuario">Usuario</span></div>
-          <button class="btn-edit-row">Editar</button>
-        </div>
-        <div class="user-row">
-          <div class="user-row-avatar" style="background:rgba(34,197,94,0.2);color:#4ade80;">AL</div>
-          <div class="user-row-info"><div class="name">Ana López</div><div class="email">a.lopez@email.com</div></div>
-          <div class="user-row-role"><span class="role-pill coach">Coach</span></div>
-          <button class="btn-edit-row">Editar</button>
-        </div>
+        <button class="btn-new" onclick="abrirNuevo()">+ Nuevo Usuario</button>
       </div>
 
-      <!-- Reportes -->
-      <div class="card">
-        <div class="card-title">Reportes del Sistema</div>
-        <div style="display:flex;flex-direction:column;gap:0.8rem;">
-          <div style="display:flex;align-items:center;justify-content:space-between;padding:1rem;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.07);border-radius:10px;">
-            <div>
-              <div style="font-weight:600;font-size:0.92rem;">📄 Informe Mensual – Abril 2025</div>
-              <div style="font-size:0.78rem;color:var(--text-muted);margin-top:3px;">Generado el 01 Abr 2025</div>
-            </div>
-            <button style="padding:0.4rem 0.9rem;border-radius:8px;border:1px solid rgba(242,183,5,0.3);background:rgba(242,183,5,0.1);color:var(--gold);font-size:0.8rem;cursor:pointer;font-weight:600;">Descargar</button>
-          </div>
-          <div style="display:flex;align-items:center;justify-content:space-between;padding:1rem;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.07);border-radius:10px;">
-            <div>
-              <div style="font-weight:600;font-size:0.92rem;">📄 Informe Mensual – Marzo 2025</div>
-              <div style="font-size:0.78rem;color:var(--text-muted);margin-top:3px;">Generado el 01 Mar 2025</div>
-            </div>
-            <button style="padding:0.4rem 0.9rem;border-radius:8px;border:1px solid rgba(242,183,5,0.3);background:rgba(242,183,5,0.1);color:var(--gold);font-size:0.8rem;cursor:pointer;font-weight:600;">Descargar</button>
-          </div>
-          <div style="display:flex;align-items:center;justify-content:space-between;padding:1rem;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.07);border-radius:10px;">
-            <div>
-              <div style="font-weight:600;font-size:0.92rem;">📊 Estadísticas Q1 2025</div>
-              <div style="font-size:0.78rem;color:var(--text-muted);margin-top:3px;">Enero – Marzo 2025</div>
-            </div>
-            <button style="padding:0.4rem 0.9rem;border-radius:8px;border:1px solid rgba(242,183,5,0.3);background:rgba(242,183,5,0.1);color:var(--gold);font-size:0.8rem;cursor:pointer;font-weight:600;">Descargar</button>
-          </div>
-        </div>
-        <div style="margin-top:1.2rem;padding-top:1rem;border-top:1px solid rgba(255,255,255,0.08);">
-          <div class="card-title" style="margin-bottom:0.8rem;">⚙️ Configuración Rápida</div>
-          <div style="display:flex;flex-direction:column;gap:0.5rem;">
-            <button style="width:100%;padding:0.7rem 1rem;border-radius:10px;border:1px solid rgba(255,255,255,0.1);background:rgba(255,255,255,0.04);color:var(--white);text-align:left;cursor:pointer;font-family:'Barlow',sans-serif;font-size:0.88rem;display:flex;align-items:center;gap:0.7rem;">
-              <span>🔔</span> Gestionar notificaciones
-            </button>
-            <button style="width:100%;padding:0.7rem 1rem;border-radius:10px;border:1px solid rgba(255,255,255,0.1);background:rgba(255,255,255,0.04);color:var(--white);text-align:left;cursor:pointer;font-family:'Barlow',sans-serif;font-size:0.88rem;display:flex;align-items:center;gap:0.7rem;">
-              <span>🏷️</span> Gestionar categorías de clases
-            </button>
-            <button style="width:100%;padding:0.7rem 1rem;border-radius:10px;border:1px solid rgba(255,255,255,0.1);background:rgba(255,255,255,0.04);color:var(--white);text-align:left;cursor:pointer;font-family:'Barlow',sans-serif;font-size:0.88rem;display:flex;align-items:center;gap:0.7rem;">
-              <span>💳</span> Configurar membresías
-            </button>
-          </div>
-        </div>
+      <div class="table-wrap">
+        <table class="users-table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Nombre Completo</th>
+              <th>Email</th>
+              <th>Rol</th>
+              <th>Fecha Registro</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody id="tbody">
+            <tr class="state-row"><td colspan="6">⏳ Cargando usuarios...</td></tr>
+          </tbody>
+        </table>
       </div>
     </div>
 
   </main>
 
+  <!-- MODAL -->
+  <div class="modal-backdrop" id="modal">
+    <div class="modal">
+      <button class="modal-close" onclick="cerrarModal()">✕</button>
+      <div class="modal-title" id="modal-titulo">Nuevo Usuario</div>
+
+      <div class="form-group">
+        <label class="form-label">Nombre completo</label>
+        <input type="text" id="m-nombre" class="form-input" placeholder="Ej: Juan Pérez"/>
+        <div class="field-error" id="err-nombre">El nombre es obligatorio</div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Email</label>
+        <input type="email" id="m-email" class="form-input" placeholder="juan@demo.cl"/>
+        <div class="field-error" id="err-email">El email es obligatorio</div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Rol</label>
+        <select id="m-rol" class="form-select">
+          <option value="user">Usuario</option>
+          <option value="coach">Coach</option>
+          <option value="admin">Admin</option>
+        </select>
+      </div>
+      <div id="bloque-password">
+        <div class="form-group">
+          <label class="form-label">Contraseña</label>
+          <input type="password" id="m-password" class="form-input" placeholder="Mínimo 8 caracteres"/>
+          <div class="field-error" id="err-password">Mínimo 8 caracteres</div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Confirmar contraseña</label>
+          <input type="password" id="m-confirm" class="form-input" placeholder="Repite la contraseña"/>
+          <div class="field-error" id="err-confirm">Las contraseñas no coinciden</div>
+        </div>
+      </div>
+
+      <p id="modal-error" style="color:#f87171;font-size:0.85rem;margin-top:0.5rem;display:none;"></p>
+
+      <div class="modal-footer">
+        <button class="btn-cancel-modal" onclick="cerrarModal()">Cancelar</button>
+        <button class="btn-save-modal" onclick="guardar()">💾 Guardar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- TOAST -->
+  <div class="toast" id="toast"></div>
+
   <script src="js/users.js"></script>
   <script src="js/dashboard.js"></script>
   <script src="js/auth.js"></script>
+  <script>
+    const API  = "http://localhost:3000";
+    let editId = null;
 
+    function token() { return localStorage.getItem("token"); }
+
+    // ── AVATAR SIDEBAR ────────────────────────────────────
+    function iniciales(nombre) {
+      if (!nombre) return "?";
+      return nombre.split(" ").map(w=>w[0]||"").join("").toUpperCase().slice(0,2);
+    }
+
+    function cargarAvatarSidebar() {
+      const u      = JSON.parse(localStorage.getItem("user")) || {};
+      const nombre = u.full_name || u.name || "";
+      const avatar = u.metadata?.avatar || "";
+      document.getElementById("sidebar-name").textContent        = nombre;
+      document.getElementById("sidebar-avatar-init").textContent = iniciales(nombre);
+      if (avatar) {
+        const img = document.getElementById("sidebar-avatar-img");
+        img.src    = avatar;
+        img.onload = () => img.classList.add("loaded");
+      }
+    }
+
+    // ── TOAST ─────────────────────────────────────────────
+    function toast(msg, tipo="success") {
+      const el = document.getElementById("toast");
+      el.textContent = msg;
+      el.className   = `toast ${tipo} show`;
+      setTimeout(() => el.classList.remove("show"), 3000);
+    }
+
+    // ── FECHA ─────────────────────────────────────────────
+    function fmtFecha(iso) {
+      if (!iso) return "—";
+      const d = new Date(iso);
+      return `${String(d.getDate()).padStart(2,"0")}/${String(d.getMonth()+1).padStart(2,"0")}/${d.getFullYear()}`;
+    }
+
+    // ── BADGE ROL ─────────────────────────────────────────
+    function badge(role) {
+      const cls = {admin:"badge-admin",coach:"badge-coach",user:"badge-user"}[role]||"badge-user";
+      return `<span class="badge ${cls}">${role}</span>`;
+    }
+
+    // ── CARGAR TABLA ──────────────────────────────────────
+    async function cargar() {
+      try {
+        const res  = await fetch(`${API}/api/users`, {
+          headers: { "Authorization":"Bearer "+token() }
+        });
+        const data = await res.json();
+        const list = Array.isArray(data) ? data : (data.data || data.users || []);
+
+        document.getElementById("stat-total").textContent = list.length;
+        document.getElementById("stat-user").textContent  = list.filter(u=>u.role==="user").length;
+        document.getElementById("stat-coach").textContent = list.filter(u=>u.role==="coach").length;
+        document.getElementById("stat-admin").textContent = list.filter(u=>u.role==="admin").length;
+
+        const tbody = document.getElementById("tbody");
+        if (!list.length) {
+          tbody.innerHTML = `<tr class="state-row"><td colspan="6">No hay usuarios registrados.</td></tr>`;
+          return;
+        }
+
+        tbody.innerHTML = list.map(u => {
+          const nombre  = u.full_name || u.name || "—";
+          const avatar  = u.metadata?.avatar || "";
+          // Colores de avatar por rol
+          const colors  = { admin:"rgba(239,68,68,0.25)", coach:"rgba(59,130,246,0.25)", user:"rgba(34,197,94,0.25)" };
+          const bgColor = colors[u.role] || colors.user;
+          const initials= iniciales(nombre);
+          const imgTag  = avatar
+            ? `<img src="${avatar}" alt="" onload="this.classList.add('loaded')">`
+            : "";
+
+          return `
+          <tr>
+            <td style="color:var(--text-muted);">${u.id}</td>
+            <td>
+              <div class="table-name-cell">
+                <div class="table-avatar" style="background:${bgColor};">
+                  ${imgTag}
+                  <span>${initials}</span>
+                </div>
+                <strong>${nombre}</strong>
+              </div>
+            </td>
+            <td style="color:var(--text-muted);font-size:0.85rem;">${u.email}</td>
+            <td>${badge(u.role)}</td>
+            <td style="color:var(--text-muted);font-size:0.85rem;">${fmtFecha(u.created_at)}</td>
+            <td>
+              <button class="btn-action btn-edit"
+                onclick="abrirEditar(${u.id},'${nombre.replace(/'/g,"\\'")}','${u.email}','${u.role}')"
+                title="Editar">✏️</button>
+              <button class="btn-action btn-delete"
+                onclick="eliminar(${u.id},'${nombre.replace(/'/g,"\\'")}')"
+                title="Eliminar">🗑️</button>
+            </td>
+          </tr>`;
+        }).join("");
+
+      } catch(e) {
+        document.getElementById("tbody").innerHTML =
+          `<tr class="state-row"><td colspan="6">❌ Error al cargar. Verifica la conexión.</td></tr>`;
+      }
+    }
+
+    // ── MODAL NUEVO ───────────────────────────────────────
+    function abrirNuevo() {
+      editId = null;
+      document.getElementById("modal-titulo").textContent      = "Nuevo Usuario";
+      document.getElementById("bloque-password").style.display = "block";
+      limpiarModal();
+      document.getElementById("modal").classList.add("open");
+    }
+
+    function abrirEditar(id, nombre, email, rol) {
+      editId = id;
+      document.getElementById("modal-titulo").textContent      = "Editar Usuario";
+      document.getElementById("bloque-password").style.display = "none";
+      document.getElementById("m-nombre").value = nombre;
+      document.getElementById("m-email").value  = email;
+      document.getElementById("m-rol").value    = rol;
+      limpiarErrores();
+      document.getElementById("modal").classList.add("open");
+    }
+
+    function cerrarModal() {
+      document.getElementById("modal").classList.remove("open");
+      limpiarModal();
+    }
+
+    function limpiarModal() {
+      ["m-nombre","m-email","m-password","m-confirm"].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.value = "";
+      });
+      document.getElementById("m-rol").value = "user";
+      limpiarErrores();
+    }
+
+    function limpiarErrores() {
+      document.querySelectorAll(".field-error").forEach(e=>e.style.display="none");
+      document.querySelectorAll(".input-error").forEach(e=>e.classList.remove("input-error"));
+      const me = document.getElementById("modal-error");
+      me.style.display="none"; me.textContent="";
+    }
+
+    function mostrarError(inputId, errorId) {
+      document.getElementById(inputId).classList.add("input-error");
+      document.getElementById(errorId).style.display = "block";
+    }
+
+    // ── GUARDAR ───────────────────────────────────────────
+    async function guardar() {
+      limpiarErrores();
+      const nombre   = document.getElementById("m-nombre").value.trim();
+      const email    = document.getElementById("m-email").value.trim();
+      const rol      = document.getElementById("m-rol").value;
+      const password = document.getElementById("m-password")?.value.trim()||"";
+      const confirm  = document.getElementById("m-confirm")?.value.trim()||"";
+
+      let ok = true;
+      if (!nombre)          { mostrarError("m-nombre","err-nombre");  ok=false; }
+      if (!email)           { mostrarError("m-email","err-email");    ok=false; }
+      if (!editId) {
+        if (password.length<8) { mostrarError("m-password","err-password"); ok=false; }
+        if (password!==confirm){ mostrarError("m-confirm","err-confirm");   ok=false; }
+      }
+      if (!ok) return;
+
+      try {
+        const url    = editId ? `${API}/api/users/${editId}` : `${API}/api/users`;
+        const method = editId ? "PUT" : "POST";
+        const body   = editId
+          ? { full_name:nombre, email, role:rol }
+          : { full_name:nombre, email, role:rol, password,
+              must_change_password:false, birth_date:"2000-01-01", metadata:{sports:[]} };
+
+        const res  = await fetch(url, {
+          method,
+          headers:{ "Content-Type":"application/json","Authorization":"Bearer "+token() },
+          body: JSON.stringify(body)
+        });
+        const data = await res.json();
+
+        if (!res.ok) {
+          const me = document.getElementById("modal-error");
+          me.textContent = data.message||"Error al guardar.";
+          me.style.display = "block";
+          return;
+        }
+
+        cerrarModal();
+        toast(editId ? "Usuario actualizado ✓" : "Usuario creado ✓");
+        cargar();
+      } catch(e) {
+        toast("Error de conexión.", "error");
+      }
+    }
+
+    // ── ELIMINAR ──────────────────────────────────────────
+    async function eliminar(id, nombre) {
+      if (!confirm(`¿Eliminar a "${nombre}"? Esta acción no se puede deshacer.`)) return;
+      try {
+        const res = await fetch(`${API}/api/users/${id}`, {
+          method:"DELETE",
+          headers:{ "Authorization":"Bearer "+token() }
+        });
+        if (!res.ok) {
+          const d = await res.json();
+          toast(d.message||"Error al eliminar.", "error");
+          return;
+        }
+        toast("Usuario eliminado ✓");
+        cargar();
+      } catch(e) {
+        toast("Error de conexión.", "error");
+      }
+    }
+
+    // ── INIT ──────────────────────────────────────────────
+    cargarAvatarSidebar();
+    cargar();
+  </script>
 </body>
 </html>

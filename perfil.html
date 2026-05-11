@@ -1,0 +1,787 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>SportClub – Mi Perfil</title>
+  <link rel="stylesheet" href="styles.css"/>
+  <style>
+    .profile-grid {
+      display:grid; grid-template-columns:260px 1fr; gap:1.5rem;
+    }
+    @media(max-width:900px){ .profile-grid { grid-template-columns:1fr; } }
+
+    /* Tarjeta identidad */
+    .id-card {
+      background:linear-gradient(160deg,var(--purple) 0%,var(--purple-light) 100%);
+      border:1px solid rgba(255,255,255,0.1); border-radius:20px;
+      padding:2rem 1.5rem; text-align:center;
+      display:flex; flex-direction:column; align-items:center;
+      position:relative; overflow:hidden;
+    }
+    .id-card::before {
+      content:'SC'; font-family:'Bebas Neue',sans-serif; font-size:9rem;
+      color:rgba(255,255,255,0.04); position:absolute;
+      bottom:-30px; right:-15px; line-height:1; pointer-events:none;
+    }
+
+    /* Avatar con hover para cambiar foto */
+    .id-avatar {
+      width:90px; height:90px; border-radius:50%;
+      background:linear-gradient(135deg,var(--purple-light),var(--gold));
+      display:grid; place-items:center;
+      font-family:'Bebas Neue',sans-serif; font-size:2rem;
+      border:3px solid rgba(242,183,5,0.35);
+      margin-bottom:0.5rem; position:relative; z-index:1;
+      overflow:hidden; cursor:pointer;
+    }
+    .id-avatar img {
+      width:100%; height:100%; object-fit:cover; display:none; border-radius:50%;
+    }
+    .id-avatar img.loaded { display:block; }
+    .id-avatar .initials { position:absolute; }
+    .id-avatar img.loaded ~ .initials { display:none; }
+
+    .avatar-overlay {
+      position:absolute; inset:0; border-radius:50%;
+      background:rgba(0,0,0,0.6); display:grid; place-items:center;
+      opacity:0; transition:opacity 0.2s; font-size:1.3rem; z-index:2;
+    }
+    .id-avatar:hover .avatar-overlay { opacity:1; }
+
+    .avatar-change-hint {
+      font-size:0.72rem; color:var(--gold); margin-bottom:0.8rem;
+      cursor:pointer; text-decoration:underline; text-underline-offset:2px;
+    }
+    .avatar-change-hint:hover { opacity:0.8; }
+
+    .id-name { font-size:1.1rem; font-weight:700; margin-bottom:3px; }
+    .id-sub  { font-size:0.8rem; color:var(--text-muted); margin-bottom:1rem; }
+
+    .id-info-item {
+      display:flex; align-items:center; gap:0.6rem;
+      width:100%; padding:0.55rem 0; text-align:left;
+      border-bottom:1px solid rgba(255,255,255,0.06);
+      font-size:0.83rem; color:rgba(255,255,255,0.7);
+    }
+    .id-info-item:last-child { border-bottom:none; }
+    .id-info-item .ico { width:18px; text-align:center; flex-shrink:0; }
+
+    /* Modal foto */
+    .photo-modal-backdrop {
+      display:none; position:fixed; inset:0; z-index:300;
+      background:rgba(0,0,0,0.78); backdrop-filter:blur(8px);
+      align-items:center; justify-content:center; padding:1rem;
+    }
+    .photo-modal-backdrop.open { display:flex; }
+    .photo-modal {
+      background:#1e1231; border:1px solid rgba(255,255,255,0.1);
+      border-radius:20px; padding:2rem; width:100%; max-width:400px;
+      position:relative; animation:fadeUp 0.3s ease both;
+    }
+    .photo-modal-title {
+      font-family:'Bebas Neue',sans-serif; font-size:1.4rem;
+      letter-spacing:0.04em; margin-bottom:1.5rem; text-align:center;
+    }
+    .photo-preview-wrap {
+      display:flex; justify-content:center; margin-bottom:1.2rem;
+    }
+    .photo-preview {
+      width:100px; height:100px; border-radius:50%;
+      background:linear-gradient(135deg,var(--purple-light),var(--gold));
+      overflow:hidden; border:3px solid rgba(242,183,5,0.3);
+      display:grid; place-items:center;
+      font-family:'Bebas Neue',sans-serif; font-size:2.2rem;
+      position:relative;
+    }
+    .photo-preview img {
+      width:100%; height:100%; object-fit:cover; display:none; border-radius:50%;
+    }
+    .photo-preview img.loaded { display:block; }
+    .photo-preview img.loaded ~ .prev-initials { display:none; }
+    .prev-initials { position:absolute; }
+
+    .photo-hint {
+      font-size:0.78rem; color:var(--text-muted); margin-top:0.5rem; line-height:1.5;
+    }
+    .photo-modal-actions {
+      display:flex; gap:0.8rem; justify-content:flex-end; margin-top:1.4rem; flex-wrap:wrap;
+    }
+    .btn-remove-photo {
+      padding:0.55rem 1rem; border-radius:8px;
+      border:1px solid rgba(239,68,68,0.3); background:rgba(239,68,68,0.1);
+      color:#f87171; cursor:pointer; font-size:0.82rem;
+      font-family:'Barlow',sans-serif; transition:all 0.2s; margin-right:auto;
+    }
+    .btn-remove-photo:hover { background:rgba(239,68,68,0.25); }
+    .btn-cancel-photo {
+      padding:0.6rem 1.2rem; border-radius:10px;
+      border:1px solid rgba(255,255,255,0.15); background:transparent;
+      color:var(--text-muted); cursor:pointer;
+      font-family:'Barlow',sans-serif; font-size:0.9rem; transition:all 0.2s;
+    }
+    .btn-cancel-photo:hover { color:#fff; }
+    .btn-save-photo {
+      padding:0.6rem 1.3rem; border-radius:10px; border:none;
+      background:var(--gold); color:var(--purple-dark);
+      font-family:'Bebas Neue',sans-serif; font-size:1rem;
+      letter-spacing:0.06em; cursor:pointer; transition:background 0.2s;
+    }
+    .btn-save-photo:hover { background:var(--gold-dark); }
+
+    /* Secciones derechas */
+    .sec-card {
+      background:rgba(255,255,255,0.04);
+      border:1px solid rgba(255,255,255,0.08);
+      border-radius:16px; padding:1.8rem; margin-bottom:1.2rem;
+    }
+    .sec-card:last-child { margin-bottom:0; }
+    .sec-head {
+      display:flex; align-items:center; justify-content:space-between;
+      margin-bottom:1.5rem;
+    }
+    .sec-title { font-family:'Bebas Neue',sans-serif; font-size:1.3rem; letter-spacing:0.03em; }
+    .btn-edit-toggle {
+      padding:0.5rem 1.1rem; border-radius:8px; border:none;
+      background:var(--gold); color:var(--purple-dark);
+      font-family:'Bebas Neue',sans-serif; font-size:0.9rem;
+      letter-spacing:0.05em; cursor:pointer; transition:background 0.2s;
+    }
+    .btn-edit-toggle:hover { background:var(--gold-dark); }
+
+    .view-mode { display:block; }
+    .edit-mode { display:none;  }
+    .is-editing .view-mode { display:none; }
+    .is-editing .edit-mode { display:block; }
+
+    .data-grid { display:grid; grid-template-columns:1fr 1fr; gap:1.2rem; }
+    @media(max-width:600px){ .data-grid { grid-template-columns:1fr; } }
+
+    .data-field label {
+      display:block; font-size:0.72rem; font-weight:700;
+      letter-spacing:0.08em; text-transform:uppercase;
+      color:var(--text-muted); margin-bottom:0.4rem;
+    }
+    .data-field .val { font-size:0.95rem; color:#fff; font-weight:500; }
+
+    .field-error { color:#f87171; font-size:0.78rem; margin-top:4px; display:none; }
+    .input-error { border-color:#f87171 !important; }
+
+    .msg { font-size:0.85rem; padding:0.65rem 1rem; border-radius:8px; margin-top:1rem; display:none; }
+    .msg.ok  { background:rgba(34,197,94,0.15); color:#4ade80; display:block; }
+    .msg.err { background:rgba(239,68,68,0.15); color:#f87171; display:block; }
+
+    .sec-actions { display:flex; gap:0.8rem; justify-content:flex-end; margin-top:1.2rem; }
+    .btn-cancel-sec {
+      padding:0.6rem 1.2rem; border-radius:10px;
+      border:1px solid rgba(255,255,255,0.15); background:transparent;
+      color:var(--text-muted); cursor:pointer;
+      font-family:'Barlow',sans-serif; font-size:0.9rem; transition:all 0.2s;
+    }
+    .btn-cancel-sec:hover { color:#fff; }
+    .btn-save-sec {
+      padding:0.6rem 1.3rem; border-radius:10px; border:none;
+      background:var(--gold); color:var(--purple-dark);
+      font-family:'Bebas Neue',sans-serif; font-size:1rem;
+      letter-spacing:0.06em; cursor:pointer; transition:background 0.2s;
+    }
+    .btn-save-sec:hover { background:var(--gold-dark); }
+    .btn-pw-save {
+      padding:0.6rem 1.4rem; border-radius:10px; border:none;
+      background:var(--user-accent); color:#fff;
+      font-family:'Bebas Neue',sans-serif; font-size:1rem;
+      letter-spacing:0.06em; cursor:pointer; transition:background 0.2s;
+    }
+    .btn-pw-save:hover { background:var(--user-dark); }
+
+    .pw-wrap { position:relative; }
+    .pw-wrap .form-input { padding-right:2.8rem; }
+    .pw-eye {
+      position:absolute; right:0.85rem; top:50%; transform:translateY(-50%);
+      background:none; border:none; color:var(--text-muted); cursor:pointer; font-size:1rem;
+    }
+    .pw-eye:hover { color:#fff; }
+
+    .breadcrumb { font-size:0.8rem; color:var(--text-muted); margin-bottom:1.5rem; }
+    .breadcrumb a { color:var(--gold); text-decoration:none; }
+    .breadcrumb a:hover { text-decoration:underline; }
+
+    .photo-msg { font-size:0.82rem; margin-top:0.8rem; padding:0.5rem 0.8rem; border-radius:8px; display:none; }
+    .photo-msg.ok  { background:rgba(34,197,94,0.15); color:#4ade80; display:block; }
+    .photo-msg.err { background:rgba(239,68,68,0.15); color:#f87171; display:block; }
+  </style>
+</head>
+<body class="dash-body user-theme">
+
+  <!-- SIDEBAR -->
+  <aside class="dash-sidebar">
+    <div class="sidebar-logo">
+      <a href="index.html"><img src="logo.png" alt="SportClub" style="height:40px;width:auto;"/></a>
+    </div>
+    <nav class="sidebar-nav" id="sidebar-nav"></nav>
+    <div class="sidebar-bottom">
+      <button class="btn-edit-profile" onclick="window.location.href='perfil.html'">
+        <span class="icon">✏️</span><span>Editar perfil</span>
+      </button>
+      <button class="btn-logout" onclick="cerrarSesion()">
+        <span class="icon">↩</span><span>Cerrar sesión</span>
+      </button>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="dash-main">
+    <div class="breadcrumb"><a id="dash-link" href="#">Inicio</a> › Mi Perfil</div>
+
+    <div class="dash-header">
+      <div class="dash-header-left">
+        <h1>Mi Perfil</h1>
+        <p>Gestiona tu información personal y preferencias de cuenta</p>
+      </div>
+    </div>
+
+    <div class="profile-grid">
+
+      <!-- ── TARJETA IDENTIDAD ── -->
+      <div class="id-card">
+
+        <!-- Avatar clickeable -->
+        <div class="id-avatar" onclick="abrirModalFoto()" title="Cambiar foto de perfil">
+          <img id="id-avatar-img" src="" alt="Foto de perfil"/>
+          <span class="initials" id="id-avatar-initials">?</span>
+          <div class="avatar-overlay">📷</div>
+        </div>
+
+        <div class="avatar-change-hint" onclick="abrirModalFoto()">Cambiar foto</div>
+
+        <div class="id-name" id="id-name">...</div>
+        <div class="id-sub">Usuario del Sistema</div>
+        <span class="role-badge" id="id-badge" style="margin-bottom:1.5rem;">...</span>
+
+        <div style="width:100%;">
+          <div class="id-info-item"><span class="ico">✉️</span><span id="id-email">...</span></div>
+          <div class="id-info-item"><span class="ico">🎂</span><span id="id-birth">...</span></div>
+          <div class="id-info-item"><span class="ico">🛡️</span><span id="id-role">...</span></div>
+          <div class="id-info-item"><span class="ico">📅</span><span id="id-created">...</span></div>
+        </div>
+      </div>
+
+      <!-- ── COLUMNA DERECHA ── -->
+      <div>
+
+        <!-- INFORMACIÓN PERSONAL -->
+        <div class="sec-card" id="sec-info">
+          <div class="sec-head">
+            <div class="sec-title">📋 Información Personal</div>
+            <button class="btn-edit-toggle" onclick="toggleInfo()">✏️ Editar Perfil</button>
+          </div>
+
+          <div class="view-mode">
+            <div class="data-grid">
+              <div class="data-field"><label>Nombre completo</label><div class="val" id="v-nombre">...</div></div>
+              <div class="data-field"><label>Email</label><div class="val" id="v-email">...</div></div>
+              <div class="data-field"><label>Fecha de nacimiento</label><div class="val" id="v-birth">...</div></div>
+              <div class="data-field"><label>Deporte favorito</label><div class="val" id="v-sport">...</div></div>
+            </div>
+            <div class="data-field" style="margin-top:1.2rem;">
+              <label>Otros / Metadata</label>
+              <div class="val" id="v-meta" style="color:var(--text-muted);font-size:0.88rem;">—</div>
+            </div>
+          </div>
+
+          <div class="edit-mode">
+            <div class="data-grid">
+              <div class="form-group">
+                <label class="form-label">Nombre completo *</label>
+                <input type="text" id="e-nombre" class="form-input" placeholder="Tu nombre completo"/>
+                <div class="field-error" id="err-nombre">El nombre es obligatorio</div>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Email *</label>
+                <input type="email" id="e-email" class="form-input" placeholder="tu@correo.com"/>
+                <div class="field-error" id="err-email">Email inválido</div>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Fecha de nacimiento</label>
+                <input type="date" id="e-birth" class="form-input"/>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Deporte favorito</label>
+                <input type="text" id="e-sport" class="form-input" placeholder="Ej: CrossFit"/>
+              </div>
+            </div>
+            <div class="form-group" style="margin-top:0.5rem;">
+              <label class="form-label">Otros / Metadata</label>
+              <textarea id="e-meta" class="form-input" rows="2"
+                style="resize:vertical;" placeholder="Intereses, habilidades, etc."></textarea>
+            </div>
+            <div id="msg-info" class="msg"></div>
+            <div class="sec-actions">
+              <button class="btn-cancel-sec" onclick="cancelarInfo()">Cancelar</button>
+              <button class="btn-save-sec" onclick="guardarInfo()">✓ Guardar cambios</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- CAMBIAR CONTRASEÑA -->
+        <div class="sec-card">
+          <div class="sec-head">
+            <div class="sec-title">🔒 Cambiar Contraseña</div>
+          </div>
+          <div class="data-grid">
+            <div class="form-group">
+              <label class="form-label">Contraseña actual *</label>
+              <div class="pw-wrap">
+                <input type="password" id="pw-actual" class="form-input" placeholder="Tu contraseña actual"/>
+                <button class="pw-eye" onclick="togglePw('pw-actual',this)">👁</button>
+              </div>
+              <div class="field-error" id="err-pw-actual">La contraseña actual es obligatoria</div>
+            </div>
+            <div></div>
+            <div class="form-group">
+              <label class="form-label">Nueva contraseña *</label>
+              <div class="pw-wrap">
+                <input type="password" id="pw-nueva" class="form-input" placeholder="Mínimo 8 caracteres"/>
+                <button class="pw-eye" onclick="togglePw('pw-nueva',this)">👁</button>
+              </div>
+              <div class="field-error" id="err-pw-nueva">Mínimo 8 caracteres</div>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Confirmar nueva contraseña *</label>
+              <div class="pw-wrap">
+                <input type="password" id="pw-confirm" class="form-input" placeholder="Repite la contraseña"/>
+                <button class="pw-eye" onclick="togglePw('pw-confirm',this)">👁</button>
+              </div>
+              <div class="field-error" id="err-pw-confirm">Las contraseñas no coinciden</div>
+            </div>
+          </div>
+          <p style="font-size:0.78rem;color:var(--text-muted);margin-top:0.8rem;">
+            ℹ️ La contraseña debe tener al menos 8 caracteres, incluir números y letras.
+          </p>
+          <div id="msg-pw" class="msg"></div>
+          <div class="sec-actions">
+            <button class="btn-pw-save" onclick="cambiarPassword()">🔐 Actualizar contraseña</button>
+          </div>
+        </div>
+
+      </div><!-- fin columna derecha -->
+    </div>
+  </main>
+
+  <!-- ── MODAL FOTO DE PERFIL ── -->
+  <div class="photo-modal-backdrop" id="modal-foto">
+    <div class="photo-modal">
+      <div class="photo-modal-title">📷 Foto de Perfil</div>
+
+      <!-- Preview -->
+      <div class="photo-preview-wrap">
+        <div class="photo-preview">
+          <img id="prev-img" src="" alt="Preview"/>
+          <span class="prev-initials" id="prev-initials">?</span>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">URL de la imagen</label>
+        <input type="url" id="foto-url" class="form-input"
+          placeholder="https://ejemplo.com/mi-foto.jpg"
+          oninput="previewFoto(this.value)"/>
+        <div class="field-error" id="err-foto" style="display:none;">URL inválida o imagen no accesible</div>
+        <p class="photo-hint">
+          Pega la URL de una imagen pública (JPG, PNG, WebP).<br/>
+          Puedes usar servicios como <strong>i.imgur.com</strong> o <strong>ui-avatars.com</strong>.
+        </p>
+      </div>
+
+      <div id="msg-foto" class="photo-msg"></div>
+
+      <div class="photo-modal-actions">
+        <button class="btn-remove-photo" onclick="quitarFoto()">🗑 Quitar foto</button>
+        <button class="btn-cancel-photo" onclick="cerrarModalFoto()">Cancelar</button>
+        <button class="btn-save-photo"   onclick="guardarFoto()">✓ Guardar foto</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/users.js"></script>
+  <script src="js/dashboard.js"></script>
+  <script src="js/auth.js"></script>
+  <script>
+    const API = "http://localhost:3000";
+    let perfil = {};
+
+    function token() { return localStorage.getItem("token"); }
+
+    // ── SIDEBAR ───────────────────────────────────────────
+    function buildSidebar(role) {
+      const dash = role==="admin" ? "dashboard-admin.html"
+                 : role==="coach" ? "dashboard-coach.html"
+                 : "dashboard-usuario.html";
+      document.getElementById("dash-link").href = dash;
+
+      const items = role==="admin"
+        ? [["🏠","Inicio",dash],["👤","Usuarios","dashboard-admin.html"],["📊","Estadísticas","#"],["🙍","Perfil","perfil.html"]]
+        : role==="coach"
+        ? [["🏠","Inicio",dash],["👥","Mis Alumnos","#"],["📋","Clases","#"],["🙍","Perfil","perfil.html"]]
+        : [["🏠","Inicio",dash],["📅","Reservas","#"],["🏃","Clases","#"],["🙍","Perfil","perfil.html"]];
+
+      document.getElementById("sidebar-nav").innerHTML = items.map(([ico,txt,href]) =>
+        `<a class="nav-item${txt==="Perfil"?" active":""}" href="${href}">
+          <span class="icon">${ico}</span><span>${txt}</span>
+        </a>`
+      ).join("");
+
+      if (role==="coach")      document.body.className = "dash-body coach-theme";
+      else if (role==="admin") document.body.className = "dash-body admin-theme";
+    }
+
+    // ── HELPERS ───────────────────────────────────────────
+    function fmtFecha(iso) {
+      if (!iso) return "—";
+      const d = new Date(iso);
+      return `${String(d.getDate()).padStart(2,"0")}/${String(d.getMonth()+1).padStart(2,"0")}/${d.getFullYear()}`;
+    }
+
+    function iniciales(nombre) {
+      if (!nombre) return "?";
+      return nombre.split(" ").map(w=>w[0]||"").join("").toUpperCase().slice(0,2);
+    }
+
+    function showErr(inputId, errId) {
+      document.getElementById(inputId).classList.add("input-error");
+      document.getElementById(errId).style.display = "block";
+    }
+
+    function limpiarErrores() {
+      document.querySelectorAll(".field-error").forEach(e => e.style.display = "none");
+      document.querySelectorAll(".input-error").forEach(e => e.classList.remove("input-error"));
+    }
+
+    // ── RENDER AVATAR (tarjeta izquierda) ─────────────────
+    function renderAvatar(url, nombre) {
+      const img      = document.getElementById("id-avatar-img");
+      const initials = document.getElementById("id-avatar-initials");
+      initials.textContent = iniciales(nombre);
+      if (url) {
+        img.src = url;
+        img.onload  = () => img.classList.add("loaded");
+        img.onerror = () => { img.classList.remove("loaded"); };
+      } else {
+        img.src = "";
+        img.classList.remove("loaded");
+      }
+    }
+
+    // ── CARGAR PERFIL ─────────────────────────────────────
+    async function cargarPerfil() {
+      try {
+        const res  = await fetch(`${API}/api/auth/me`, {
+          headers: { "Authorization":"Bearer " + token() }
+        });
+        const data = await res.json();
+        perfil = data.data || data.user || data;
+        localStorage.setItem("user", JSON.stringify(perfil));
+      } catch(e) {
+        perfil = user;
+      }
+      renderPerfil(perfil);
+    }
+
+    function renderPerfil(u) {
+      const nombre  = u.full_name || u.name || "";
+      const email   = u.email     || "";
+      const rol     = u.role      || "user";
+      const birth   = u.birth_date|| "";
+      const sport   = u.metadata?.sports?.[0]?.name || "—";
+      const meta    = u.metadata?.notes || u.metadata?.other || "—";
+      const created = u.created_at|| "";
+      const avatar  = u.metadata?.avatar || "";
+
+      // Tarjeta izquierda
+      renderAvatar(avatar, nombre);
+      document.getElementById("id-name").textContent    = nombre;
+      document.getElementById("id-email").textContent   = email;
+      document.getElementById("id-birth").textContent   = fmtFecha(birth);
+      document.getElementById("id-role").textContent    = rol.charAt(0).toUpperCase()+rol.slice(1);
+      document.getElementById("id-created").textContent = fmtFecha(created);
+      document.getElementById("id-badge").textContent   = rol;
+
+      // Vista info
+      document.getElementById("v-nombre").textContent = nombre;
+      document.getElementById("v-email").textContent  = email;
+      document.getElementById("v-birth").textContent  = fmtFecha(birth);
+      document.getElementById("v-sport").textContent  = sport;
+      document.getElementById("v-meta").textContent   = meta;
+
+      // Inputs edición
+      document.getElementById("e-nombre").value = nombre;
+      document.getElementById("e-email").value  = email;
+      document.getElementById("e-birth").value  = birth ? birth.split("T")[0] : "";
+      document.getElementById("e-sport").value  = sport==="—" ? "" : sport;
+      document.getElementById("e-meta").value   = meta ==="—" ? "" : meta;
+
+      buildSidebar(rol);
+    }
+
+    // ── TOGGLE EDICIÓN INFO ───────────────────────────────
+    function toggleInfo() {
+      const sec = document.getElementById("sec-info");
+      const btn = sec.querySelector(".btn-edit-toggle");
+      sec.classList.toggle("is-editing");
+      btn.textContent = sec.classList.contains("is-editing") ? "✕ Cancelar" : "✏️ Editar Perfil";
+      document.getElementById("msg-info").className = "msg";
+    }
+
+    function cancelarInfo() {
+      const sec = document.getElementById("sec-info");
+      sec.classList.remove("is-editing");
+      sec.querySelector(".btn-edit-toggle").textContent = "✏️ Editar Perfil";
+      document.getElementById("msg-info").className = "msg";
+      limpiarErrores();
+    }
+
+    // ── GUARDAR INFO ──────────────────────────────────────
+    async function guardarInfo() {
+      limpiarErrores();
+      const nombre = document.getElementById("e-nombre").value.trim();
+      const email  = document.getElementById("e-email").value.trim();
+      const birth  = document.getElementById("e-birth").value;
+      const sport  = document.getElementById("e-sport").value.trim();
+      const meta   = document.getElementById("e-meta").value.trim();
+      const msg    = document.getElementById("msg-info");
+
+      let ok = true;
+      if (!nombre)                    { showErr("e-nombre","err-nombre"); ok=false; }
+      if (!email||!email.includes("@")){ showErr("e-email","err-email");  ok=false; }
+      if (!ok) return;
+
+      try {
+        const res = await fetch(`${API}/api/auth/me`, {
+          method:"PUT",
+          headers:{ "Content-Type":"application/json", "Authorization":"Bearer "+token() },
+          body: JSON.stringify({
+            full_name: nombre, email,
+            birth_date: birth || undefined,
+            metadata: {
+              ...perfil.metadata,
+              sports: sport
+                ? [{ name:sport, frequency_per_week: perfil.metadata?.sports?.[0]?.frequency_per_week||3 }]
+                : [],
+              notes: meta
+            }
+          })
+        });
+        const data = await res.json();
+
+        if (!res.ok) {
+          msg.textContent = data.message || "Error al actualizar.";
+          msg.className = "msg err";
+          return;
+        }
+
+        perfil = data.data || data.user || data;
+        localStorage.setItem("user", JSON.stringify(perfil));
+        renderPerfil(perfil);
+        msg.textContent = "Perfil actualizado correctamente ✓";
+        msg.className = "msg ok";
+        setTimeout(() => cancelarInfo(), 1800);
+
+      } catch(e) {
+        msg.textContent = "Error de conexión.";
+        msg.className = "msg err";
+      }
+    }
+
+    // ── CAMBIAR CONTRASEÑA ────────────────────────────────
+    async function cambiarPassword() {
+      limpiarErrores();
+      const actual   = document.getElementById("pw-actual").value.trim();
+      const nueva    = document.getElementById("pw-nueva").value.trim();
+      const confirma = document.getElementById("pw-confirm").value.trim();
+      const msg      = document.getElementById("msg-pw");
+      msg.className  = "msg";
+
+      let ok = true;
+      if (!actual)            { showErr("pw-actual","err-pw-actual");   ok=false; }
+      if (nueva.length < 8)   { showErr("pw-nueva","err-pw-nueva");    ok=false; }
+      if (nueva !== confirma) { showErr("pw-confirm","err-pw-confirm"); ok=false; }
+      if (!ok) return;
+
+      try {
+        const res  = await fetch(`${API}/api/auth/me/password`, {
+          method:"PUT",
+          headers:{ "Content-Type":"application/json", "Authorization":"Bearer "+token() },
+          body: JSON.stringify({ current_password:actual, new_password:nueva })
+        });
+        const data = await res.json();
+
+        if (!res.ok) {
+          msg.textContent = data.message || "Error al cambiar contraseña.";
+          msg.className = "msg err";
+          return;
+        }
+
+        msg.textContent = "Contraseña actualizada correctamente ✓";
+        msg.className = "msg ok";
+        ["pw-actual","pw-nueva","pw-confirm"].forEach(id =>
+          document.getElementById(id).value = ""
+        );
+      } catch(e) {
+        msg.textContent = "Error de conexión.";
+        msg.className = "msg err";
+      }
+    }
+
+    // ── TOGGLE VER CONTRASEÑA ─────────────────────────────
+    function togglePw(id, btn) {
+      const input = document.getElementById(id);
+      input.type  = input.type === "password" ? "text" : "password";
+      btn.textContent = input.type === "password" ? "👁" : "🙈";
+    }
+
+    // ─────────────────────────────────────────────────────
+    // ── MODAL FOTO DE PERFIL ──────────────────────────────
+    // ─────────────────────────────────────────────────────
+
+    function abrirModalFoto() {
+      const urlActual = perfil.metadata?.avatar || "";
+      document.getElementById("foto-url").value = urlActual;
+      document.getElementById("err-foto").style.display = "none";
+      document.getElementById("msg-foto").className = "photo-msg";
+
+      // Preview inicial
+      const prevImg      = document.getElementById("prev-img");
+      const prevInitials = document.getElementById("prev-initials");
+      prevInitials.textContent = iniciales(perfil.full_name || perfil.name || "");
+
+      if (urlActual) {
+        prevImg.src = urlActual;
+        prevImg.onload  = () => prevImg.classList.add("loaded");
+        prevImg.onerror = () => prevImg.classList.remove("loaded");
+      } else {
+        prevImg.src = "";
+        prevImg.classList.remove("loaded");
+      }
+
+      document.getElementById("modal-foto").classList.add("open");
+    }
+
+    function cerrarModalFoto() {
+      document.getElementById("modal-foto").classList.remove("open");
+    }
+
+    // Preview en tiempo real al escribir la URL
+    function previewFoto(url) {
+      const prevImg = document.getElementById("prev-img");
+      const errEl   = document.getElementById("err-foto");
+      errEl.style.display = "none";
+      prevImg.classList.remove("loaded");
+
+      if (!url) return;
+
+      prevImg.src    = url;
+      prevImg.onload  = () => prevImg.classList.add("loaded");
+      prevImg.onerror = () => {
+        prevImg.classList.remove("loaded");
+        errEl.style.display = "block";
+      };
+    }
+
+    // Guardar URL como metadata.avatar via PUT /api/auth/me
+    async function guardarFoto() {
+      const url  = document.getElementById("foto-url").value.trim();
+      const msg  = document.getElementById("msg-foto");
+      const errEl= document.getElementById("err-foto");
+      msg.className = "photo-msg";
+      errEl.style.display = "none";
+
+      if (url && !url.startsWith("http")) {
+        errEl.style.display = "block";
+        return;
+      }
+
+      try {
+        const res = await fetch(`${API}/api/auth/me`, {
+          method:"PUT",
+          headers:{ "Content-Type":"application/json", "Authorization":"Bearer "+token() },
+          body: JSON.stringify({
+            full_name:  perfil.full_name || perfil.name,
+            email:      perfil.email,
+            birth_date: perfil.birth_date || undefined,
+            metadata: {
+              ...perfil.metadata,
+              avatar: url   // ← guarda la URL en metadata.avatar
+            }
+          })
+        });
+        const data = await res.json();
+
+        if (!res.ok) {
+          msg.textContent = data.message || "Error al guardar la foto.";
+          msg.className = "photo-msg err";
+          return;
+        }
+
+        perfil = data.data || data.user || data;
+        localStorage.setItem("user", JSON.stringify(perfil));
+        renderAvatar(url, perfil.full_name || perfil.name || "");
+
+        msg.textContent = "Foto actualizada correctamente ✓";
+        msg.className = "photo-msg ok";
+        setTimeout(() => cerrarModalFoto(), 1500);
+
+      } catch(e) {
+        msg.textContent = "Error de conexión.";
+        msg.className = "photo-msg err";
+      }
+    }
+
+    // Quitar foto
+    async function quitarFoto() {
+      document.getElementById("foto-url").value = "";
+      previewFoto("");
+      const msg = document.getElementById("msg-foto");
+
+      try {
+        const res = await fetch(`${API}/api/auth/me`, {
+          method:"PUT",
+          headers:{ "Content-Type":"application/json", "Authorization":"Bearer "+token() },
+          body: JSON.stringify({
+            full_name:  perfil.full_name || perfil.name,
+            email:      perfil.email,
+            birth_date: perfil.birth_date || undefined,
+            metadata: { ...perfil.metadata, avatar: "" }
+          })
+        });
+        const data = await res.json();
+
+        if (!res.ok) {
+          msg.textContent = "Error al quitar la foto.";
+          msg.className = "photo-msg err";
+          return;
+        }
+
+        perfil = data.data || data.user || data;
+        localStorage.setItem("user", JSON.stringify(perfil));
+        renderAvatar("", perfil.full_name || perfil.name || "");
+
+        msg.textContent = "Foto eliminada correctamente ✓";
+        msg.className = "photo-msg ok";
+        setTimeout(() => cerrarModalFoto(), 1500);
+
+      } catch(e) {
+        msg.textContent = "Error de conexión.";
+        msg.className = "photo-msg err";
+      }
+    }
+
+    // ── INIT ──────────────────────────────────────────────
+    cargarPerfil();
+
+    // Cerrar modal al hacer clic fuera
+    document.getElementById("modal-foto").addEventListener("click", function(e) {
+      if (e.target === this) cerrarModalFoto();
+    });
+  </script>
+</body>
+</html>
